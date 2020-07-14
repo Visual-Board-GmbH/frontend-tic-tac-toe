@@ -10,6 +10,7 @@
   export default {
     data() {
       return {
+        message: '',
         lastMessage: 'Hier werden die letzten MQTT-Nachrichten angezeigt.',
         options: {
           keepalive: true,
