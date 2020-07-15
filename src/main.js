@@ -7,13 +7,10 @@ import App from "./App"
 import PlayView from "./views/PlayView"
 import UserView from "./views/UserView";
 import HistoryView from "./views/HistoryView";
-import App from './App.vue'
 import mqtt from "./components/MQTT"
 
 Vue.config.productionTip = false
 Vue.prototype.$mqtt = mqtt
-
-
 
 const routes = [
   { path: '/play', component: PlayView },
