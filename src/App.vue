@@ -34,7 +34,7 @@
           connectTimeout: 10 * 1000,
           clientId: "stupidClient"
         },
-        topic: 'tic-tic-toe/games',
+        topic: 'dbn-gruppe1@protonmail.com/ttt/games',
         count: 0,
         client: {}
       }
@@ -55,7 +55,7 @@
         this.lastMessage = this.count + ". " + source.toString() + "\n" + this.lastMessage
       })
 
-      this.$mqtt.subscribe('tic-tic-toe/games')
+      this.$mqtt.subscribe('dbn-gruppe1@protonmail.com/ttt/games')
     },
     methods: {
       publishMessage(topic, message) {
