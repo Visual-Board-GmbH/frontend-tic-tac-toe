@@ -5,8 +5,8 @@
   export default {
     name: "MQTT",
     launch(id, callback) {
-      client = mqtt('mqtt://localhost', {
-        port: 9001,
+      client = mqtt('mqtt://docker68683-tic-tac-toe.hidora.com', {
+        port: 11168,
         clientId: id,
         clean: false,
         keepAlive: true,
