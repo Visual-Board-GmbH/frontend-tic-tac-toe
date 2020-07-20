@@ -32,9 +32,9 @@
           retain: true,
           qos: 1,
           connectTimeout: 10 * 1000,
-          clientId: "stupidClient"
+          clientId: "overwrite"
         },
-        topic: 'dbn-gruppe1@protonmail.com/ttt/games',
+        topic: 'ttt/games',
         count: 0,
         client: {}
       }
@@ -44,7 +44,7 @@
       Navbar
     },
     created() {
-      this.$mqtt.launch('hello', (topic, source) => {
+      this.$mqtt.launch('ttt', (topic, source) => {
         // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
         console.log('message: ', source.toString())
         if (this.count === 0) {
@@ -55,7 +55,7 @@
         this.lastMessage = this.count + ". " + source.toString() + "\n" + this.lastMessage
       })
 
-      this.$mqtt.subscribe('dbn-gruppe1@protonmail.com/ttt/games')
+      this.$mqtt.subscribe('ttt/games')
     },
     methods: {
       publishMessage(topic, message) {
