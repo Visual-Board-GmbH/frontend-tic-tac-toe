@@ -8,14 +8,18 @@ import PlayView from "./views/PlayView"
 import UserView from "./views/UserView";
 import HistoryView from "./views/HistoryView";
 import mqtt from "./components/MQTT"
+import LoginView from "./views/LoginView";
+import RegisterView from "./views/RegisterView";
 
 Vue.config.productionTip = false
 Vue.prototype.$mqtt = mqtt
 
 const routes = [
-  { path: '/play', component: PlayView },
-  { path: '/history', component: UserView },
-  { path: '/user', component: HistoryView }
+  {path: "/login", component: LoginView},
+  {path: "/register", component: RegisterView},
+  {path: '/play', component: PlayView},
+  {path: '/history', component: UserView},
+  {path: '/user', component: HistoryView}
 ]
 
 const router = new VueRouter({
