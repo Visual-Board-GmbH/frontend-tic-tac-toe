@@ -1,8 +1,6 @@
 <template>
   <div class="registerView">
-    <h1>Tic-Tac-Toe</h1>
     <b-card>
-      <h3>Registrieren</h3>
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
         <b-form-group
             id="input-group-1"
@@ -63,16 +61,16 @@
         </b-form-group>
 
         <b-form-group id="input-group-5">
-          <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
+          <b-form-checkbox-group id="checkboxes-4">
             <b-form-checkbox value="terms">Datenschutzbestimmungen</b-form-checkbox>
           </b-form-checkbox-group>
         </b-form-group>
 
-        <b-button type="submit" variant="primary">Registrieren</b-button>
+        <b-button block type="submit" variant="primary">Registrieren</b-button>
       </b-form>
-    </b-card>
-    <b-card class="mt-3" header="Form Data Result">
-      <pre class="m-0">{{ form }}</pre>
+      <b-card class="mt-3" header="Form Data Result">
+        <pre class="m-0">{{ form }}</pre>
+      </b-card>
     </b-card>
   </div>
 </template>
@@ -80,14 +78,14 @@
 <script>
   export default {
     name: "RegisterView",
+    components: {},
     data() {
       return {
         form: {
           name: '',
           username: '',
           nickname: '',
-          password: '',
-          checked: []
+          password: ''
         },
         show: true
       }
@@ -95,7 +93,25 @@
     methods: {
       onSubmit(evt) {
         evt.preventDefault()
-        alert(JSON.stringify(this.form))
+
+        this.$axios({
+          method: 'post',
+          url: 'http://localhost:8081/v1/player',
+          data: this.form,
+          headers: {'Content-Type': 'application/json'}
+        })
+        .then(function (response) {
+
+          //handle success
+          console.log(response);
+          // this.$router.push('/login')
+          // todo: tf does this router stuff work?
+        })
+        .catch(function (response) {
+          //handle error
+          console.log(response);
+        });
+
       },
       onReset(evt) {
         evt.preventDefault()
@@ -116,7 +132,6 @@
 
 <style scoped>
   .registerView {
-    margin-top: 10%;
     margin-left: 20%;
     margin-right: 20%;
   }

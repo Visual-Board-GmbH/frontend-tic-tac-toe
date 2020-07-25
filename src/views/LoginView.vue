@@ -1,8 +1,6 @@
 <template>
   <div class="loginView">
-    <h1>Tic-Tac-Toe</h1>
     <b-card>
-      <h3>Login</h3>
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
         <b-form-group
             id="input-group-1"
@@ -57,14 +55,30 @@
     methods: {
       onSubmit(evt) {
         evt.preventDefault()
-        alert(JSON.stringify(this.form))
+
+        this.$axios({
+          method: 'post',
+          url: 'http://localhost:8081/v1/player/authenticate',
+          data: this.form,
+          headers: {'Content-Type': 'application/json'}
+        })
+        .then(function (response) {
+
+          //handle success
+          console.log(response);
+          // this.$router.push('/login')
+          // todo: tf does this router stuff work?
+        })
+        .catch(function (response) {
+          //handle error
+          console.log(response);
+        });
       },
       onReset(evt) {
         evt.preventDefault()
         // Reset our form values
         this.form.email = ''
         this.form.name = ''
-        this.form.checked = []
         // Trick to reset/clear native browser form validation state
         this.show = false
         this.$nextTick(() => {
@@ -77,7 +91,6 @@
 
 <style scoped>
   .loginView {
-    margin-top: 10%;
     margin-left: 20%;
     margin-right: 20%;
   }

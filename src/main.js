@@ -10,9 +10,12 @@ import HistoryView from "./views/HistoryView";
 import mqtt from "./components/MQTT"
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
+import * as axios from "axios";
 
 Vue.config.productionTip = false
 Vue.prototype.$mqtt = mqtt
+Vue.prototype.$axios = axios
+Vue.use(VueRouter)
 
 const routes = [
   {path: "/login", component: LoginView},
@@ -23,6 +26,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  // mode: 'history',
+  // base: process.env.BASE_URL,
   routes // short for `routes: routes`
 });
 

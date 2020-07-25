@@ -1,9 +1,17 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <h1>Tic-Tac-Toe</h1>
+    <br/>
+    <h3>
+      <router-link to="/login">Login</router-link>
+      |
+      <router-link to="/register">Registrieren</router-link>
+    </h3>
+    <!--    <LoginView/>-->
     <!--    <input v-model="message" placeholder="send mqtt message">-->
     <!--    <button v-on:click="publishMessage(topic, message)">Senden</button>-->
     <!--    <p style="white-space: pre-line;">{{ lastMessage }}</p>-->
+    <router-view/>
   </div>
 </template>
 
@@ -38,8 +46,7 @@
       }
     },
     name: 'App',
-    components: {
-    },
+    components: {},
     created() {
       this.$mqtt.launch('ttt', (topic, source) => {
         // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
