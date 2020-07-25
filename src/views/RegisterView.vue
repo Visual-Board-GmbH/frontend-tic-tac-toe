@@ -41,7 +41,7 @@
             description="Spielername, wird anderen Spielern angezeigt"
         >
           <b-form-input
-              id="input-2"
+              id="input-3"
               v-model="form.nickname"
               required
               type="text"
@@ -62,7 +62,7 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-4">
+        <b-form-group id="input-group-5">
           <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
             <b-form-checkbox value="terms">Datenschutzbestimmungen</b-form-checkbox>
           </b-form-checkbox-group>

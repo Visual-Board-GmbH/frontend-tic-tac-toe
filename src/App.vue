@@ -1,15 +1,13 @@
 <template>
   <div id="app">
-    <Navbar/>
     <router-view></router-view>
-    <input v-model="message" placeholder="send mqtt message">
-    <button v-on:click="publishMessage(topic, message)">Senden</button>
-    <p style="white-space: pre-line;">{{ lastMessage }}</p>
+    <!--    <input v-model="message" placeholder="send mqtt message">-->
+    <!--    <button v-on:click="publishMessage(topic, message)">Senden</button>-->
+    <!--    <p style="white-space: pre-line;">{{ lastMessage }}</p>-->
   </div>
 </template>
 
 <script>
-  import Navbar from "./components/Navbar.vue"
   import Vue from 'vue'
   import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
   import '@fortawesome/fontawesome-free/css/all.css'
@@ -41,7 +39,6 @@
     },
     name: 'App',
     components: {
-      Navbar
     },
     created() {
       this.$mqtt.launch('ttt', (topic, source) => {
