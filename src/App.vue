@@ -1,13 +1,14 @@
 <template>
   <div id="app">
+    <Toaster/>
     <h1>Tic-Tac-Toe</h1>
+    <Navbar v-if="this.player !== null"/>
     <br/>
-    <h3>
-      <router-link to="/login">Login</router-link>
+    <h3 v-if="this.player === null">
+      <router-link :to="{name: 'Login'}">Login</router-link>
       |
-      <router-link to="/register">Registrieren</router-link>
+      <router-link :to="{name: 'Register'}">Registrieren</router-link>
     </h3>
-    <Navbar v-if="player === null"/>
     <router-view/>
   </div>
 </template>
@@ -17,16 +18,21 @@
   import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
   import '@fortawesome/fontawesome-free/css/all.css'
   import '@fortawesome/fontawesome-free/js/all.js'
-  import VueRouter from 'vue-router'
   import 'bootstrap/dist/css/bootstrap.css'
   import 'bootstrap-vue/dist/bootstrap-vue.css'
   import Navbar from "./components/Navbar";
+  import Toaster from "./components/Toaster";
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
-  Vue.use(VueRouter)
 
   export default {
+
+    name: 'App',
+    components: {
+      Toaster,
+      Navbar
+    },
     data() {
       return {
         message: '',
@@ -41,21 +47,7 @@
         topic: 'ttt/games',
         count: 0,
         client: {},
-        player: {}
-      }
-    },
-    name: 'App',
-    components: {
-      Navbar
-    },
-    mounted() {
-      if (localStorage.player) {
-        this.player = localStorage.player;
-      }
-    },
-    watch: {
-      name(newPlayer) {
-        localStorage.player = newPlayer;
+        player: null
       }
     },
     created() {

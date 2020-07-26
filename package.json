@@ -13,8 +13,7 @@
     "bootstrap-vue": "^2.1.0",
     "core-js": "^3.6.5",
     "mqtt": "^4.1.0",
-    "vue": "^2.6.11",
-    "vue-toast-notification": "^0.4.1"
+    "vue": "^2.6.11"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.7.0",

@@ -37,50 +37,54 @@
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
     </b-card>
-    <router-view/>
   </div>
+
 </template>
 
 <script>
   export default {
     name: "LoginVue",
+    components: {},
     data() {
       return {
         form: {
-          username: '',
-          password: ''
+          username: 'leo',
+          password: 'leo'
         },
         show: true
       }
     },
     methods: {
-      onSubmit(evt) {
+      async onSubmit(evt) {
         evt.preventDefault()
-        this.$axios({
-          method: 'post',
-          url: 'http://localhost:8081/v1/player/authenticate',
-          data: this.form,
-          headers: {'Content-Type': 'application/json'}
-        })
-        .then(function (response) {
+        let response = null;
+        let error = null;
 
-          //handle success
-          console.log(response);
+        try {
+          response = await this.$axios({
+            method: 'post',
+            url: 'http://localhost:8081/v1/player/authenticate',
+            data: this.form,
+            headers: {'Content-Type': 'application/json'}
+          })
+        } catch (e) {
+          error = e
+        }
 
-          // todo: tf does this router stuff work?
-          // this.router.push('/play', response.data())
-          localStorage.setItem('player', JSON.stringify(response.data));
-        })
-        .catch(function (response) {
-          //handle error
-          console.log(response);
-        });
+        if (error) {
+          this.onReset(evt)
+          return;
+        }
+
+        console.log(response)
+        this.show = false
+        this.$router.push('/play/:data', response.data)
       },
       onReset(evt) {
         evt.preventDefault()
         // Reset our form values
-        this.form.email = ''
-        this.form.name = ''
+        this.form.username = ''
+        this.form.password = ''
         // Trick to reset/clear native browser form validation state
         this.show = false
         this.$nextTick(() => {
