@@ -7,6 +7,7 @@
       |
       <router-link to="/register">Registrieren</router-link>
     </h3>
+    <Navbar v-if="player === null"/>
     <router-view/>
   </div>
 </template>
@@ -19,6 +20,7 @@
   import VueRouter from 'vue-router'
   import 'bootstrap/dist/css/bootstrap.css'
   import 'bootstrap-vue/dist/bootstrap-vue.css'
+  import Navbar from "./components/Navbar";
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
@@ -38,11 +40,24 @@
         },
         topic: 'ttt/games',
         count: 0,
-        client: {}
+        client: {},
+        player: {}
       }
     },
     name: 'App',
-    components: {},
+    components: {
+      Navbar
+    },
+    mounted() {
+      if (localStorage.player) {
+        this.player = localStorage.player;
+      }
+    },
+    watch: {
+      name(newPlayer) {
+        localStorage.player = newPlayer;
+      }
+    },
     created() {
       this.$mqtt.launch('ttt', (topic, source) => {
         // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
@@ -60,6 +75,14 @@
     methods: {
       publishMessage(topic, message) {
         this.$mqtt.publish(topic, message)
+      },
+      loggedIn() {
+        let player = localStorage.getItem('player');
+        console.log(player)
+        if (player.id === null) {
+          return false
+        }
+        return true
       }
     }
   }

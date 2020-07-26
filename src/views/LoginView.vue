@@ -1,7 +1,7 @@
 <template>
   <div class="loginView">
-    <b-card>
-      <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-card v-if="show">
+      <b-form @submit="onSubmit" @reset="onReset">
         <b-form-group
             id="input-group-1"
             label="Benutzername:"
@@ -68,7 +68,8 @@
           console.log(response);
 
           // todo: tf does this router stuff work?
-          this.router.push('/play')
+          // this.router.push('/play', response.data())
+          localStorage.setItem('player', JSON.stringify(response.data));
         })
         .catch(function (response) {
           //handle error
