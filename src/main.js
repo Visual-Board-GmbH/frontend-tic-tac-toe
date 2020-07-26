@@ -9,13 +9,17 @@ import UserView from "./views/UserView";
 import HistoryView from "./views/HistoryView";
 import mqtt from "./components/MQTT"
 import LoginView from "./views/LoginView";
+import toast from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-default.css'
 import RegisterView from "./views/RegisterView";
 import * as axios from "axios";
 
+Vue.use(VueRouter)
+Vue.use(toast)
 Vue.config.productionTip = false
 Vue.prototype.$mqtt = mqtt
 Vue.prototype.$axios = axios
-Vue.use(VueRouter)
+Vue.prototype.$toast = toast
 
 const routes = [
   {path: "/login", component: LoginView},
@@ -26,12 +30,12 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  // mode: 'history',
-  // base: process.env.BASE_URL,
-  routes // short for `routes: routes`
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes: routes
 });
 
 new Vue({
-  render: h => h(App),
-  router
+  router,
+  render: h => h(App)
 }).$mount('#app')

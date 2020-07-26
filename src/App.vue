@@ -7,10 +7,6 @@
       |
       <router-link to="/register">Registrieren</router-link>
     </h3>
-    <!--    <LoginView/>-->
-    <!--    <input v-model="message" placeholder="send mqtt message">-->
-    <!--    <button v-on:click="publishMessage(topic, message)">Senden</button>-->
-    <!--    <p style="white-space: pre-line;">{{ lastMessage }}</p>-->
     <router-view/>
   </div>
 </template>

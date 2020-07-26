@@ -37,6 +37,7 @@
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
     </b-card>
+    <router-view/>
   </div>
 </template>
 
@@ -55,7 +56,6 @@
     methods: {
       onSubmit(evt) {
         evt.preventDefault()
-
         this.$axios({
           method: 'post',
           url: 'http://localhost:8081/v1/player/authenticate',
@@ -66,8 +66,9 @@
 
           //handle success
           console.log(response);
-          // this.$router.push('/login')
+
           // todo: tf does this router stuff work?
+          this.router.push('/play')
         })
         .catch(function (response) {
           //handle error
