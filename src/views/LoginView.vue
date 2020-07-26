@@ -48,8 +48,8 @@
     data() {
       return {
         form: {
-          username: 'leo',
-          password: 'leo'
+          username: '',
+          password: ''
         },
         show: true
       }
@@ -78,7 +78,7 @@
 
         console.log(response)
         this.show = false
-        this.$router.push('/play/:data', response.data)
+        this.$router.push('/play', response.data)
       },
       onReset(evt) {
         evt.preventDefault()
