@@ -1,9 +1,7 @@
 <template>
-  <transition name="fade">
   <div>
     <div>UserView</div>
   </div>
-  </transition>
 </template>
 
 <script>

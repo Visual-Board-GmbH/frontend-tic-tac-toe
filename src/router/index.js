@@ -26,8 +26,6 @@ const router = new VueRouter({
 
 //router.addRoutes(routes)
 
-
-
 //prevent user from accessing views if they are not authenticated
 router.beforeEach((to, from, next) => {
     console.log(to);
