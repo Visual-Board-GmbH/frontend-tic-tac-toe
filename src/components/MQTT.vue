@@ -6,7 +6,7 @@
     name: "MQTT",
     launch(id, callback) {
       client = mqtt('mqtt://localhost', {
-        port: 9001,
+        port: 9002,
         clientId: id,
         clean: false,
         keepAlive: true,

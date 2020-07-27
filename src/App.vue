@@ -1,16 +1,9 @@
 <template>
-  <div id="app">
-    <Toaster/>
-    <h1>Tic-Tac-Toe</h1>
-    <Navbar v-if="this.player !== null"/>
-    <br/>
-    <h3 v-if="this.player === null">
-      <router-link :to="{name: 'Login'}">Login</router-link>
-      |
-      <router-link :to="{name: 'Register'}">Registrieren</router-link>
-    </h3>
+  <b-container fluid class="p-5">
+        <Toaster/>
+        <Navbar v-if="this.$store.getters.isAuthenticated" />
     <router-view/>
-  </div>
+  </b-container>
 </template>
 
 <script>
@@ -81,12 +74,8 @@
 </script>
 
 <style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+  body {
+    background-color: #f5f5f5;
   }
+
 </style>
