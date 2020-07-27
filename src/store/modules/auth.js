@@ -17,18 +17,20 @@ const state = {
 const getters = {
     isAuthenticated: state => state.authenticatedUser != null,
     authStatus: state => state.status,
-    authenticatedUser: state => {return state.authenticatedUser},
+    authenticatedUser: state => {
+        return state.authenticatedUser
+    },
     isAlreadyLoaded: state => state.loadedOnce === true
 };
 
 const actions = {
     // eslint-disable-next-line no-unused-vars
-    [AUTH_REQUEST]: ({ commit, dispatch }, user) => {
+    [AUTH_REQUEST]: ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => {
             commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "http://localhost:8090/v1/player/authenticate",
+                    url: "v1/player/authenticate",
                     data: user,
                     method: "POST",
                     withCredentials: true,
@@ -53,24 +55,25 @@ const actions = {
                 });
         });
     },
-    [AUTH_LOGOUT]: ({ commit }) => {
+    [AUTH_LOGOUT]: ({commit}) => {
         return new Promise(resolve => {
             commit(AUTH_LOGOUT);
             resolve();
         });
     },
-    [AUTH_CHECK]: ({commit }, nickname) => {
-        return new Promise((reject) => {
+    [AUTH_CHECK]: ({commit}, nickname) => {
+        return new Promise((resolve, reject) => {
             commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "http://localhost:8090/v1/player/nickname/" + nickname,
+                    url: "v1/player/nickname/" + nickname,
                     method: "GET",
                     withCredentials: true,
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
                     commit(AUTH_SUCCESS, resp);
+                    resolve(resp);
                 })
                 .catch(err => {
                     commit(AUTH_ERROR);
@@ -78,7 +81,7 @@ const actions = {
                 });
         });
 
-}
+    }
 };
 
 const mutations = {

@@ -76,6 +76,9 @@
 </template>
 
 <script>
+
+    import ticTacToeApi from "@/mixins/ticTacToeAPI";
+
   export default {
     name: "RegisterView",
     components: {},
@@ -94,9 +97,9 @@
       onSubmit(evt) {
         evt.preventDefault()
 
-        this.$axios({
+        ticTacToeApi({
           method: 'post',
-          url: 'http://localhost:8081/v1/player',
+          url: '/v1/player',
           data: this.form,
           headers: {'Content-Type': 'application/json'}
         })
