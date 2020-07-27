@@ -15,9 +15,12 @@
   import 'bootstrap-vue/dist/bootstrap-vue.css'
   import Navbar from "./components/Navbar";
   import Toaster from "./components/Toaster";
+  import {AUTH_CHECK} from "@/store/actions/auth";
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
+
+
 
   export default {
 
@@ -44,6 +47,7 @@
       }
     },
     created() {
+      this.$store.dispatch(AUTH_CHECK, this.$store.getters)
       this.$mqtt.launch('ttt', (topic, source) => {
         // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
         console.log('message: ', source.toString())

@@ -31,7 +31,7 @@ const router = new VueRouter({
 //prevent user from accessing views if they are not authenticated
 router.beforeEach((to, from, next) => {
     console.log(to);
-    if (to.matched.some((route) => route.meta.requiresAuth)) {
+    if (to.matched.some((route) => route.meta.requiresAuth && to.name !== "Login")) {
         console.log(to.name + " - isAuthenticated: " + store.getters.isAuthenticated)
         if (!store.getters.isAuthenticated) {
             next({name: "Login"});
