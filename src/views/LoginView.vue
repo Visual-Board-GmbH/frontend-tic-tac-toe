@@ -1,7 +1,7 @@
 <template>
-  <div class="loginView">
-    <b-card v-if="show">
-      <b-form @submit="onSubmit" @reset="onReset">
+  <b-container class="shadow p-3 mb-5 mt-5 bg-white rounded">
+    <h3>Login</h3>
+      <b-form @submit.prevent="login">
         <b-form-group
             id="input-group-1"
             label="Benutzername:"
@@ -29,19 +29,19 @@
               type="password"
           ></b-form-input>
         </b-form-group>
-
-        <b-button block type="submit" variant="primary">Login</b-button>
+        <b-button block type="submit" variant="primary">Anmelden</b-button>
+        <small>Besitzen Sie noch keinen Account. Erstellen Sie einen <router-link :to="{name: 'Register'}">hier</router-link></small>
       </b-form>
-    </b-card>
 
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
     </b-card>
-  </div>
-
+  </b-container>
 </template>
 
 <script>
+  import { AUTH_REQUEST } from "@/store/actions/auth";
+
   export default {
     name: "LoginVue",
     components: {},
@@ -55,11 +55,17 @@
       }
     },
     methods: {
-      async onSubmit(evt) {
+      login: function() {
+
+        this.$store.dispatch(AUTH_REQUEST, this.form).then(() => {
+          this.$router.push("/play");
+        });
+      }
+      /*async onSubmit(evt) {
         evt.preventDefault()
         let response = null;
         let error = null;
-
+        console.log(this.form);
         try {
           response = await this.$axios({
             method: 'post',
@@ -77,8 +83,9 @@
         }
 
         console.log(response)
-        this.show = false
-        this.$router.push('/play', response.data)
+        this.$root.userData = response.data;
+        this.$root.isAuthorized = true;
+        this.$router.push('/play')
       },
       onReset(evt) {
         evt.preventDefault()
@@ -90,15 +97,11 @@
         this.$nextTick(() => {
           this.show = true
         })
-      }
+      }*/
     }
   }
 </script>
 
 <style scoped>
-  .loginView {
-    margin-left: 20%;
-    margin-right: 20%;
-  }
 
 </style>

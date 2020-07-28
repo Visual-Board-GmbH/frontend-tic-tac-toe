@@ -1,16 +1,9 @@
 <template>
-  <div id="app">
-    <Toaster/>
-    <h1>Tic-Tac-Toe</h1>
-    <Navbar v-if="this.player !== null"/>
-    <br/>
-    <h3 v-if="this.player === null">
-      <router-link :to="{name: 'Login'}">Login</router-link>
-      |
-      <router-link :to="{name: 'Register'}">Registrieren</router-link>
-    </h3>
+  <b-container fluid class="p-5">
+        <Toaster/>
+        <Navbar v-if="this.$store.getters.isAuthenticated" />
     <router-view/>
-  </div>
+  </b-container>
 </template>
 
 <script>
@@ -22,9 +15,12 @@
   import 'bootstrap-vue/dist/bootstrap-vue.css'
   import Navbar from "./components/Navbar";
   import Toaster from "./components/Toaster";
+  import {AUTH_CHECK} from "@/store/actions/auth";
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
+
+
 
   export default {
 
@@ -35,8 +31,6 @@
     },
     data() {
       return {
-        message: '',
-        lastMessage: 'Hier werden die letzten MQTT-Nachrichten angezeigt.',
         options: {
           keepalive: true,
           retain: true,
@@ -45,21 +39,15 @@
           clientId: "overwrite"
         },
         topic: 'ttt/games',
-        count: 0,
         client: {},
         player: null
       }
     },
     created() {
+      this.$store.dispatch(AUTH_CHECK, this.$store.getters.authenticatedUser)
       this.$mqtt.launch('ttt', (topic, source) => {
         // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
         console.log('message: ', source.toString())
-        if (this.count === 0) {
-          this.lastMessage = ''
-        }
-
-        this.count++
-        this.lastMessage = this.count + ". " + source.toString() + "\n" + this.lastMessage
       })
 
       this.$mqtt.subscribe('ttt/games')
@@ -67,26 +55,14 @@
     methods: {
       publishMessage(topic, message) {
         this.$mqtt.publish(topic, message)
-      },
-      loggedIn() {
-        let player = localStorage.getItem('player');
-        console.log(player)
-        if (player.id === null) {
-          return false
-        }
-        return true
       }
     }
   }
 </script>
 
 <style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+  body {
+    background-color: #f5f5f5;
   }
+
 </style>
