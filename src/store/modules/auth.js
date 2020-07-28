@@ -11,32 +11,38 @@ import router from "@/router";
 const state = {
     authenticatedUser: null,
     status: "",
+    loadedOnce: false
 };
 
 const getters = {
-    isAuthenticated: state => state.status === "success",
+    isAuthenticated: state => state.authenticatedUser != null,
     authStatus: state => state.status,
-    authenticatedUser: state => {return state.authenticatedUser}
+    authenticatedUser: state => {
+        return state.authenticatedUser
+    },
+    isAlreadyLoaded: state => state.loadedOnce === true
 };
 
 const actions = {
     // eslint-disable-next-line no-unused-vars
-    [AUTH_REQUEST]: ({ commit, dispatch }, user) => {
+    [AUTH_REQUEST]: ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => {
             commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/authenticate",
+                    url: "v1/player/authenticate",
                     data: user,
                     method: "POST",
+                    withCredentials: true,
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
-                    console.log(resp);
                     var checkAuth = setInterval(async () => {
-                        dispatch(AUTH_CHECK, resp.data.nickname, checkAuth).then(() => {
-                            router.push("/login");
+                        dispatch(AUTH_CHECK, resp.data.nickname).then(() => {
+
                             clearInterval(checkAuth);
+                        }).catch(() => {
+                            router.push("/login");
                         });
                     }, 10000); //100 sec
                     commit(AUTH_SUCCESS, resp);
@@ -49,36 +55,40 @@ const actions = {
                 });
         });
     },
-    [AUTH_LOGOUT]: ({ commit }) => {
+    [AUTH_LOGOUT]: ({commit}) => {
         return new Promise(resolve => {
             commit(AUTH_LOGOUT);
             resolve();
         });
     },
-    [AUTH_CHECK]: ({commit, dispatch }, nickname) => {
-        return new Promise((reject) => {
+    [AUTH_CHECK]: ({commit}, nickname) => {
+        return new Promise((resolve, reject) => {
+            commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/nickname",
-                    data: nickname,
-                    method: "POST",
+                    url: "v1/player/nickname/" + nickname,
+                    method: "GET",
+                    withCredentials: true,
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
                     commit(AUTH_SUCCESS, resp);
+                    resolve(resp);
                 })
                 .catch(err => {
-                    dispatch(AUTH_LOGOUT);
+                    commit(AUTH_ERROR);
                     reject(err)
                 });
         });
 
-}
+    }
 };
 
 const mutations = {
     [AUTH_REQUEST]: state => {
         state.status = "loading";
+        state.loadedOnce = true;
+        state.hasLoadedOnce = true;
     },
     [AUTH_SUCCESS]: (state, resp) => {
         state.status = "success";
