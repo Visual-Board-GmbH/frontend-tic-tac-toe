@@ -1,32 +1,36 @@
 <template>
-  <div id="app">
-    <Navbar/>
-    <router-view></router-view>
-    <input v-model="message" placeholder="send mqtt message">
-    <button v-on:click="publishMessage(topic, message)">Senden</button>
-    <p style="white-space: pre-line;">{{ lastMessage }}</p>
-  </div>
+  <b-container fluid class="p-5">
+        <Toaster/>
+        <Navbar v-if="this.$store.getters.isAuthenticated" />
+    <router-view/>
+  </b-container>
 </template>
 
 <script>
-  import Navbar from "./components/Navbar.vue"
   import Vue from 'vue'
   import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
   import '@fortawesome/fontawesome-free/css/all.css'
   import '@fortawesome/fontawesome-free/js/all.js'
-  import VueRouter from 'vue-router'
   import 'bootstrap/dist/css/bootstrap.css'
   import 'bootstrap-vue/dist/bootstrap-vue.css'
+  import Navbar from "./components/Navbar";
+  import Toaster from "./components/Toaster";
+  import {AUTH_CHECK} from "@/store/actions/auth";
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
-  Vue.use(VueRouter)
+
+
 
   export default {
+
+    name: 'App',
+    components: {
+      Toaster,
+      Navbar
+    },
     data() {
       return {
-        message: '',
-        lastMessage: 'Hier werden die letzten MQTT-Nachrichten angezeigt.',
         options: {
           keepalive: true,
           retain: true,
@@ -35,24 +39,15 @@
           clientId: "overwrite"
         },
         topic: 'ttt/games',
-        count: 0,
-        client: {}
+        client: {},
+        player: null
       }
     },
-    name: 'App',
-    components: {
-      Navbar
-    },
     created() {
+      this.$store.dispatch(AUTH_CHECK, this.$store.getters.authenticatedUser)
       this.$mqtt.launch('ttt', (topic, source) => {
         // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
         console.log('message: ', source.toString())
-        if (this.count === 0) {
-          this.lastMessage = ''
-        }
-
-        this.count++
-        this.lastMessage = this.count + ". " + source.toString() + "\n" + this.lastMessage
       })
 
       this.$mqtt.subscribe('ttt/games')
@@ -66,12 +61,8 @@
 </script>
 
 <style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+  body {
+    background-color: #f5f5f5;
   }
+
 </style>
