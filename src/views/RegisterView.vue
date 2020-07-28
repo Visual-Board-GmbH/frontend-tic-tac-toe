@@ -61,12 +61,10 @@
             </b-form-group>
 
             <b-form-group id="input-group-5">
-                <b-form-checkbox-group id="checkboxes-4">
-                    <b-form-checkbox value="terms">Datenschutzbestimmungen</b-form-checkbox>
-                </b-form-checkbox-group>
+                    <b-form-checkbox v-model="termsAccepted" :checked="terms">Datenschutzbestimmungen</b-form-checkbox>
             </b-form-group>
 
-            <b-button block type="submit" variant="primary">Registrieren</b-button>
+            <b-button block type="submit" v-if="this.termsAccepted" variant="primary">Registrieren</b-button>
             <small>Bereits registriert?
                 <router-link :to="{name: 'Login'}">Anmelden</router-link>
             </small>
@@ -89,7 +87,8 @@
                     nickname: '',
                     password: ''
                 },
-                show: true
+                show: true,
+                termsAccepted: false
             }
         },
         methods: {
