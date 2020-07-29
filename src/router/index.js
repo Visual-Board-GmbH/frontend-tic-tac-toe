@@ -7,7 +7,7 @@ import UserView from "../views/UserView";
 import HistoryView from "../views/HistoryView";
 import GameView from "@/views/GameView";
 import NewGameView from "@/views/NewGameView";
-//import store from "../store"
+import store from "../store"
 
 Vue.use(VueRouter);
 
