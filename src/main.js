@@ -14,8 +14,8 @@ Vue.prototype.$mqtt = mqtt
 
 new Vue({
   el: "#app",
-  router,
   store,
+  router,
   mqtt,
   template: "<App/>",
   components: {App}

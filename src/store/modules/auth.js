@@ -11,17 +11,21 @@ import ticTacToeApi from "@/mixins/ticTacToeAPI";
 const state = {
     authenticatedUser: null,
     status: "",
+    loadedOnce: false
 };
 
 const getters = {
-    isAuthenticated: state => state.status === "success",
+    isAuthenticated: state => state.authenticatedUser != null,
     authStatus: state => state.status,
-    authenticatedUser: state => {return state.authenticatedUser}
+    authenticatedUser: state => {
+        return state.authenticatedUser
+    },
+    isAlreadyLoaded: state => state.loadedOnce === true
 };
 
 const actions = {
     // eslint-disable-next-line no-unused-vars
-    [AUTH_REQUEST]: ({ commit, dispatch }, user) => {
+    [AUTH_REQUEST]: ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => {
             commit(AUTH_REQUEST);
             ticTacToeApi(
@@ -36,6 +40,8 @@ const actions = {
                         dispatch(AUTH_CHECK, resp.data.nickname, checkAuth).then(() => {
                             router.push("/login");
                             clearInterval(checkAuth);
+                        }).catch(() => {
+                            router.push("/login");
                         });
                     }, 10000); //100 sec*/
                     commit(AUTH_SUCCESS, resp);
@@ -48,7 +54,7 @@ const actions = {
                 });
         });
     },
-    [AUTH_LOGOUT]: ({ commit }) => {
+    [AUTH_LOGOUT]: ({commit}) => {
         return new Promise(resolve => {
             commit(AUTH_LOGOUT);
             resolve();
@@ -67,17 +73,19 @@ const actions = {
                     resolve(resp);
                 })
                 .catch(err => {
-                    dispatch(AUTH_LOGOUT);
+                    commit(AUTH_ERROR);
                     reject(err)
                 });
         });
 
-}
+    }
 };
 
 const mutations = {
     [AUTH_REQUEST]: state => {
         state.status = "loading";
+        state.loadedOnce = true;
+        state.hasLoadedOnce = true;
     },
     [AUTH_SUCCESS]: (state, resp) => {
         state.status = "success";
