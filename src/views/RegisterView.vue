@@ -73,7 +73,6 @@
 </template>
 
 <script>
-
     import ticTacToeApi from "@/mixins/ticTacToeAPI";
 
     export default {
@@ -94,7 +93,6 @@
         methods: {
             onSubmit(evt) {
                 evt.preventDefault()
-
                 ticTacToeApi({
                     method: 'post',
                     url: '/v1/player',
@@ -104,12 +102,12 @@
                     .then(function (response) {
                         //handle success
                         console.log(response);
+                        this.$router.push('/login')
                     })
                     .catch(function (response) {
                         //handle error
                         console.log(response);
                     });
-
             },
             onReset(evt) {
                 evt.preventDefault()

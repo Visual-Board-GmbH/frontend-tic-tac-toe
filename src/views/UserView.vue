@@ -61,35 +61,55 @@
       <b-form-group
           id="input-group-5"
           label="Tic Tac Toe Zeichen:"
-          label-for="input-2"
+          label-for="input-5"
           label-align="left"
       >
-        <b-form-file
-            id="input-5"
-            v-model="form.tileImageX"
-            placeholder="Wählen Sie eine Datei aus oder ziehen Sie hier hin."
-            drop-placeholder="Ziehen Sie eine Datei hier hin."
-        ></b-form-file>
-        <div class="mt-3">X-Zeichen: {{ form.tileImageX }}</div>
-        <b-form-file
-            id="input-5"
-            v-model="form.tileImageO"
-            placeholder="Wählen Sie eine Datei aus oder ziehen Sie hier hin."
-            drop-placeholder="Ziehen Sie eine Datei hier hin."
-        ></b-form-file>
-        <div class="mt-3">O-Zeichen: {{ form.tileImageX}}</div>
+        <b-form-row id="input-5">
+          <b-col>
+            <b-form-group
+                id="input-group-6"
+                label="X-Zeichen:"
+                label-for="input-6"
+                label-align="left"
+            >
+              <b-form-file
+                  id="input-6"
+                  v-model="form.tileImageX"
+                  placeholder="Wählen Sie eine Datei aus oder ziehen Sie hier hin."
+                  drop-placeholder="Ziehen Sie eine Datei hier hin."
+                  @change="onTileImageXChange"
+              ></b-form-file>
+              <img v-if="form.tileImageXUrl" :src="form.tileImageXUrl">
+            </b-form-group>
+          </b-col>
+          <b-col>
+            <b-form-group
+                id="input-group-7"
+                label="O-Zeichen:"
+                label-for="input-7"
+                label-align="left"
+            >
+              <b-form-file
+                  id="input-7"
+                  v-model="form.tileImageO"
+                  placeholder="Wählen Sie eine Datei aus oder ziehen Sie hier hin."
+                  drop-placeholder="Ziehen Sie eine Datei hier hin."
+                  @change="onTileImageOChange"
+              ></b-form-file>
+              <img v-if="form.tileImageOUrl" :src="form.tileImageOUrl">
+            </b-form-group>
+          </b-col>
+        </b-form-row>
       </b-form-group>
 
-      <b-button block type="submit" variant="primary">Anmelden</b-button>
-      <small>Besitzen Sie noch keinen Account. Erstellen Sie einen
-        <router-link :to="{name: 'Register'}">hier</router-link>
-      </small>
+      <b-button block type="submit" variant="primary">Speichern</b-button>
     </b-form>
   </b-container>
 </template>
 
 <script>
 import ticTacToeApi from "@/mixins/ticTacToeAPI";
+
 export default {
   name: "UserView",
   data: () => {
@@ -100,7 +120,9 @@ export default {
         nickname: "",
         password: "",
         tileImageX: null,
-        tileImageO: null
+        tileImageO: null,
+        tileImageXUrl: null,
+        tileImageOUrl: null
       }
     }
   },
@@ -108,11 +130,11 @@ export default {
     updateUser: function () {
 
       let userData = {
-        name: this.form.name,
-        username: this.form.userName,
-        nickname: this.form.nickname,
-        password: this.form.password
-      },
+            name: this.form.name,
+            username: this.form.userName,
+            nickname: this.form.nickname,
+            password: this.form.password
+          },
           authenticatedUser = this.$store.getters.authenticatedUser;
 
       ticTacToeApi({
@@ -126,23 +148,26 @@ export default {
         console.log(err);
       })
       console.log(JSON.stringify(this.form));
+    },
+    onTileImageXChange: function (e) {
+      let file = e.target.files[0];
+      this.form.tileImageXUrl = URL.createObjectURL(file);
+    },
+    onTileImageOChange: function (e) {
+      let file = e.target.files[0];
+      this.form.tileImageOUrl = URL.createObjectURL(file);
     }
+  },
+  created: function () {
+    let authenticatedUser = this.$store.getters.authenticatedUser;
+    this.form.name = authenticatedUser.name;
+    this.form.userName = authenticatedUser.username;
+    this.form.nickname = authenticatedUser.nickname;
   },
   components: {}
 }
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
-}
 
-.fade-enter /* .fade-leave-active below version 2.1.8 */
-{
-  opacity: 0;
-}
-
-.fade-leave-to {
-  opacity: 1;
-}
 </style>

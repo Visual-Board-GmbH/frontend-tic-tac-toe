@@ -6,7 +6,7 @@ import {
     AUTH_CHECK
 } from "../actions/auth";
 import ticTacToeApi from "@/mixins/ticTacToeAPI";
-import router from "@/router";
+//import router from "@/router";
 
 const state = {
     authenticatedUser: null,
@@ -30,21 +30,20 @@ const actions = {
             commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "v1/player/authenticate",
-                    data: user,
+                    url: "http://localhost:8081/v1/player/authenticate",
                     method: "POST",
-                    withCredentials: true,
+                    data: user,
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
-                    var checkAuth = setInterval(async () => {
-                        dispatch(AUTH_CHECK, resp.data.nickname).then(() => {
-
+                    /*var checkAuth = setInterval(async () => {
+                        dispatch(AUTH_CHECK, resp.data.nickname, checkAuth).then(() => {
+                            router.push("/login");
                             clearInterval(checkAuth);
                         }).catch(() => {
                             router.push("/login");
                         });
-                    }, 10000); //100 sec
+                    }, 10000); //100 sec*/
                     commit(AUTH_SUCCESS, resp);
                     resolve(resp);
                 })
@@ -61,14 +60,12 @@ const actions = {
             resolve();
         });
     },
-    [AUTH_CHECK]: ({commit}, nickname) => {
+    [AUTH_CHECK]: ({commit, dispatch }) => {
         return new Promise((resolve, reject) => {
-            commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "v1/player/nickname/" + nickname,
-                    method: "GET",
-                    withCredentials: true,
+                    url: "http://localhost:8081/v1/player/authenticate/status",
+                    method: "POST",
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {

@@ -12,7 +12,6 @@ Vue.prototype.$mqtt = mqtt
 
 
 
-
 new Vue({
   el: "#app",
   store,

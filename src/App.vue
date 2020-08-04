@@ -13,7 +13,6 @@
   import 'bootstrap/dist/css/bootstrap.css'
   import 'bootstrap-vue/dist/bootstrap-vue.css'
   import Navbar from "./components/Navbar";
-  import {AUTH_CHECK} from "@/store/actions/auth";
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
@@ -25,9 +24,6 @@
     name: 'App',
     components: {
       Navbar
-    },
-    created() {
-      this.$store.dispatch(AUTH_CHECK, this.$store.getters)
     }
   }
 </script>
