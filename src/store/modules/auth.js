@@ -6,7 +6,7 @@ import {
     AUTH_CHECK
 } from "../actions/auth";
 import ticTacToeApi from "@/mixins/ticTacToeAPI";
-import router from "@/router";
+//import router from "@/router";
 
 const state = {
     authenticatedUser: null,
@@ -27,18 +27,17 @@ const actions = {
             ticTacToeApi(
                 {
                     url: "http://localhost:8081/v1/player/authenticate",
-                    data: user,
                     method: "POST",
+                    data: user,
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
-                    console.log(resp);
-                    var checkAuth = setInterval(async () => {
+                    /*var checkAuth = setInterval(async () => {
                         dispatch(AUTH_CHECK, resp.data.nickname, checkAuth).then(() => {
                             router.push("/login");
                             clearInterval(checkAuth);
                         });
-                    }, 10000); //100 sec
+                    }, 10000); //100 sec*/
                     commit(AUTH_SUCCESS, resp);
                     resolve(resp);
                 })
@@ -55,17 +54,17 @@ const actions = {
             resolve();
         });
     },
-    [AUTH_CHECK]: ({commit, dispatch }, nickname) => {
-        return new Promise((reject) => {
+    [AUTH_CHECK]: ({commit, dispatch }) => {
+        return new Promise((resolve, reject) => {
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/nickname",
-                    data: nickname,
+                    url: "http://localhost:8081/v1/player/authenticate/status",
                     method: "POST",
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
                     commit(AUTH_SUCCESS, resp);
+                    resolve(resp);
                 })
                 .catch(err => {
                     dispatch(AUTH_LOGOUT);

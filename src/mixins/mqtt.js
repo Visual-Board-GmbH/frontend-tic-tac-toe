@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 
 const client = mqtt.connect('mqtt://localhost', {
-    port: 9002,
+    port: 9001,
     clientId: clientId,
     clean: false,
     keepAlive: true,

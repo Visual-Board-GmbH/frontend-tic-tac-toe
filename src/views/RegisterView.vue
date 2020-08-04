@@ -76,6 +76,8 @@
 </template>
 
 <script>
+import axios from "@/mixins/ticTacToeAPI"
+
   export default {
     name: "RegisterView",
     components: {},
@@ -94,20 +96,19 @@
       onSubmit(evt) {
         evt.preventDefault()
 
-        this.$axios({
+        axios({
           method: 'post',
           url: 'http://localhost:8081/v1/player',
           data: this.form,
           headers: {'Content-Type': 'application/json'}
         })
-        .then(function (response) {
+        .then((response) => {
 
           //handle success
           console.log(response);
-          // this.$router.push('/login')
-          // todo: tf does this router stuff work?
+          this.$router.push('/login')
         })
-        .catch(function (response) {
+        .catch((response) => {
           //handle error
           console.log(response);
         });
