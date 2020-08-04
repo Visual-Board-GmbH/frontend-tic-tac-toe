@@ -1,6 +1,5 @@
 <template>
   <b-container fluid class="p-5">
-        <Toaster/>
         <Navbar v-if="this.$store.getters.isAuthenticated" />
     <router-view/>
   </b-container>
@@ -14,7 +13,6 @@
   import 'bootstrap/dist/css/bootstrap.css'
   import 'bootstrap-vue/dist/bootstrap-vue.css'
   import Navbar from "./components/Navbar";
-  import Toaster from "./components/Toaster";
   import {AUTH_CHECK} from "@/store/actions/auth";
 
   Vue.use(BootstrapVue)
@@ -26,36 +24,10 @@
 
     name: 'App',
     components: {
-      Toaster,
       Navbar
     },
-    data() {
-      return {
-        options: {
-          keepalive: true,
-          retain: true,
-          qos: 1,
-          connectTimeout: 10 * 1000,
-          clientId: "overwrite"
-        },
-        topic: 'ttt/games',
-        client: {},
-        player: null
-      }
-    },
     created() {
-      this.$store.dispatch(AUTH_CHECK, this.$store.getters.authenticatedUser)
-      this.$mqtt.launch('ttt', (topic, source) => {
-        // console.log('message: ', JSON.parse(source.toString())) // later for data transfer
-        console.log('message: ', source.toString())
-      })
-
-      this.$mqtt.subscribe('ttt/games')
-    },
-    methods: {
-      publishMessage(topic, message) {
-        this.$mqtt.publish(topic, message)
-      }
+      this.$store.dispatch(AUTH_CHECK, this.$store.getters)
     }
   }
 </script>
