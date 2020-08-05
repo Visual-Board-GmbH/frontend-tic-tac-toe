@@ -11,7 +11,6 @@ Vue.config.productionTip = false
 Vue.prototype.$mqtt = mqtt
 
 
-
 new Vue({
   el: "#app",
   store,

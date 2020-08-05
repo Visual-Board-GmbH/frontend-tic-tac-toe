@@ -1,7 +1,8 @@
 <template>
   <b-container>
     <!-- <router-link to="/new_game" class="new-game"><i class="fas fa-plus"></i><span class="ml-2">Neues Spiel</router-link></span>-->
-    <button class="btn" v-b-modal.modal-new-game><i class="fas fa-plus"></i><span class="ml-2">Neues Spiel</span></button>
+    <button class="btn" v-b-modal.modal-new-game><i class="fas fa-plus"></i><span class="ml-2">Neues Spiel</span>
+    </button>
     <b-modal
         id="modal-new-game"
         title="BootstrapVue"
@@ -112,12 +113,32 @@ export default {
     //ToDo Publish Message to Recieve all games
     this.$mqtt.on('message', (topic, message) => {
       // message is Buffer
-      if (topic === "ttt/all_games") {
-        let gameData = JSON.parse(message.toString());
+      if (topic === "ttt/new_game") {
 
-        //ToDo Identify User Obect
-        this.myGames.items = gameData.filter(game => (game.host === "1" || game.guest === "1"));
-        this.openGames.items = gameData.filter(game => game.guest === "");
+        let activeRequest = localStorage.getItem("activeRequest") ? JSON.parse(localStorage.getItem("activeRequest")) : [],
+            newGame = JSON.parse(message.toString());
+        activeRequest = activeRequest.splice(activeRequest.indexOf(newGame.requestId), 1);
+        localStorage.setItem("activeRequest", JSON.stringify(activeRequest));
+        console.log(newGame);
+        if (Array.isArray(activeRequest) && activeRequest.indexOf(newGame.requestId) !== -1 && newGame.statusCode === 200 && newGame.serverResponse === true) {
+
+          console.log(activeRequest + " - " + activeRequest.indexOf(newGame.requestId));
+          this.$bvToast.toast("Neues Spiel mit dem Namen " + newGame.name + " wurde erstellt.", {
+            title: "Neues Spiel erstellt",
+            variant: "success",
+            solid: true,
+            appendToast: true
+          });
+
+          //modify newGame to display host and guest
+          newGame.host = newGame.gameData.host;
+          newGame.guest = newGame.gameData.guest;
+
+          this.myGames.items.push(newGame);
+          //ToDo Identify User Obect
+          /*this.myGames.items = gameData.filter(game => (game.host === "1" || game.guest === "1"));
+          this.openGames.items = gameData.filter(game => game.guest === "");*/
+        }
       }
     });
   },
@@ -126,39 +147,34 @@ export default {
   },
   methods: {
     newGame: function () {
-      const newGame = {
-        name: this.form.name,
-        gameData: {
-          host: "2"
-        },
-        playerData: [],
-        requestId: Math.random().toString(16).substr(2, 8)
+      let requestId = Math.round((Math.random() + 1) * 1000),
+          activeRequest = localStorage.getItem("activeRequest") ? JSON.parse(localStorage.getItem("activeRequest")) : [],
+          newGame = {
+            gameId: "",
+            name: this.form.name,
+            state: "OPEN",
+            lastModified: new Date(),
+            matrixIds: [],
+            gameData: {
+              host: "2",//ToDo get dynamic id -> this.$store.getters.authenticatedUser.id,
+              guest: 0,
+              moves: [],
+              winner: null
+            },
+            playerData: [],
+            statusCode: 0,
+            requestId: requestId,
+            serverResponse: false
+          }
+
+      if (Array.isArray(activeRequest)) {
+        activeRequest.push(requestId)
+        localStorage.setItem("activeRequest", JSON.stringify(activeRequest));
       }
+
       this.$mqtt.publish("ttt/new_game", JSON.stringify(newGame))
-      //ToDo set values dynamically
-      const testGame = [{
-        gameId: "1",
-        name: "Test1",
-        state: "open",
-        lastModified: "28.07.2020",
-        matrixId: "",
-        host: "2",
-        guest: "",
-        gameData: {
-          "host": "2",
-          "guest": "",
-          "moves": [],
-          "winner": ""
-        }
-      }];
-      this.$mqtt.publish("ttt/all_games", JSON.stringify(testGame))
       this.$root.$emit("bv::hide::modal", "modal-new-game");
-      this.$bvToast.toast("Neues Spiel mit dem Namen " + newGame.name + " wurde erstellt.", {
-        title: "Neues Spiel erstellt",
-        variant: "success",
-        solid: true,
-        appendToast: true
-      });
+
     }
   }
 }

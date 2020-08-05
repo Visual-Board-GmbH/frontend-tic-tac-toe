@@ -22,6 +22,18 @@ client.on("connect", function () {
             console.log("MQTT Subscribtion failed with error: " + err);
         }
     });
+
+    client.subscribe(
+        "ttt/new_game",
+        {
+            qos: 1
+        },
+        function (err) {
+
+            if(err) {
+                console.log("MQTT Subscribtion failed with error: " + err);
+            }
+        });
 });
 
 export default client;

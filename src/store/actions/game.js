@@ -1,0 +1,2 @@
+export const NEW_GAME = "NEW_GAME";
+export const ADD_ACTIVE_REQUEST = "ADD_ACTIVE_REQUEST";

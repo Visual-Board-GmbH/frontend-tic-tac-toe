@@ -109,11 +109,10 @@
         },
       computed: {
         isActivePlayer: function () {
-          let authenticatedUser = this.$store.getters.authenticatedUser;
-          console.log("authenticatedUser: " + authenticatedUser.id);
-          console.log(this.activePlayerId);
+          let authenticatedUser = this.$store.getters.authenticatedUser ? this.$store.getters.authenticatedUser : {};
 
-          if (authenticatedUser.id === this.activePlayerId) {
+          // eslint-disable-next-line no-prototype-builtins
+          if (authenticatedUser.hasOwnProperty("id") && authenticatedUser.id === this.activePlayerId) {
             return true;
           }
           return false;
