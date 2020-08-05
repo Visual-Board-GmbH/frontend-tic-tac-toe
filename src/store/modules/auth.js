@@ -3,24 +3,23 @@ import {
     AUTH_ERROR,
     AUTH_SUCCESS,
     AUTH_LOGOUT,
-    AUTH_CHECK
+    AUTH_CHECK,
+    SET_AUTHENTICATED_USER
 } from "../actions/auth";
 import ticTacToeApi from "@/mixins/ticTacToeAPI";
 //import router from "@/router";
 
 const state = {
     authenticatedUser: null,
-    status: "",
-    loadedOnce: false
+    status: ""
 };
 
 const getters = {
-    isAuthenticated: state => state.authenticatedUser != null,
+    isAuthenticated: state => state.authenticatedUser != null && state.authenticatedUser != "",
     authStatus: state => state.status,
     authenticatedUser: state => {
         return state.authenticatedUser
-    },
-    isAlreadyLoaded: state => state.loadedOnce === true
+    }
 };
 
 const actions = {
@@ -44,12 +43,13 @@ const actions = {
                             router.push("/login");
                         });
                     }, 10000); //100 sec*/
-                    commit(AUTH_SUCCESS, resp);
+
+                    commit(AUTH_SUCCESS);
+                    commit(SET_AUTHENTICATED_USER, resp);
                     resolve(resp);
                 })
                 .catch(err => {
                     commit(AUTH_ERROR, err);
-                    localStorage.removeItem("user-token");
                     reject(err);
                 });
         });
@@ -60,7 +60,7 @@ const actions = {
             resolve();
         });
     },
-    [AUTH_CHECK]: ({commit, dispatch }) => {
+    [AUTH_CHECK]: ({commit}) => {
         return new Promise((resolve, reject) => {
             ticTacToeApi(
                 {
@@ -69,7 +69,11 @@ const actions = {
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
-                    commit(AUTH_SUCCESS, resp);
+                    commit(AUTH_SUCCESS);
+                    console.log(resp);
+                    if (resp.data != "" && resp.data != null) {
+                        commit(SET_AUTHENTICATED_USER, resp);
+                    }
                     resolve(resp);
                 })
                 .catch(err => {
@@ -87,8 +91,11 @@ const mutations = {
         state.loadedOnce = true;
         state.hasLoadedOnce = true;
     },
-    [AUTH_SUCCESS]: (state, resp) => {
+    [AUTH_SUCCESS]: (state) => {
         state.status = "success";
+    },
+    [SET_AUTHENTICATED_USER]: (state, resp) => {
+        console.log("Atut User set");
         state.authenticatedUser = resp.data;
     },
     [AUTH_ERROR]: state => {

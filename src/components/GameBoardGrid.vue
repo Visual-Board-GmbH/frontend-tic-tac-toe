@@ -6,12 +6,13 @@
         </b-row> -->
         <b-row cols="3">
             <GameBoardCell
-                    v-for="col in gridLayout"
+                    v-for="col in this.gridLayout"
                     :key="col.id"
                     :colId="col.id"
                     :isSet="col.isSet"
                     :tile="col.tile"
                     :position="col.position"
+                    :isActivePlayer = "isActivePlayer"
                     @setValueInCell="updateCellValue"
             >
             </GameBoardCell>
@@ -32,139 +33,72 @@
     export default {
         name: "GameBoardGrid",
         props: {
-            playerType: {
-                type: String,
-                default: "host"
-            }
-        },
-        data: () => {
-            return {
-                /*gridLayout: [
-                    {
-                        id: 1,
-                        position: "START",
-                        cols: [
-                            {
-                                id: 1,
-                                position: "START",
-                                isSet: false
-                            },
-                            {
-                                id: 2,
-                                position: "CENTER",
-                                isSet: false
-                            },
-                            {
-                                id: 3,
-                                position: "END",
-                                isSet: false
-                            }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        position: "CENTER",
-                        cols: [
-                            {
-                                id: 4,
-                                position: "START",
-                                isSet: false
-                            },
-                            {
-                                id: 5,
-                                position: "CENTER",
-                                isSet: false
-                            },
-                            {
-                                id: 6,
-                                position: "END",
-                                isSet: false
-                            }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        position: "END",
-                        cols: [
-                            {
-                                id: 7,
-                                position: "START",
-                                isSet: false
-                            },
-                            {
-                                id: 8,
-                                position: "CENTER",
-                                isSet: false
-                            },
-                            {
-                                id: 9,
-                                position: "END",
-                                isSet: false
-                            }
-                        ]
-                    }
-                ],*/
-                gridLayout: [
-                    {
-                        id: 1,
-                        position: "TOP_LEFT",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 2,
-                        position: "TOP_MID",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 3,
-                        position: "TOP_RIGHT",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 4,
-                        position: "MID_LEFT",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 5,
-                        position: "MID_MID",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 6,
-                        position: "MID_RIGHT",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 7,
-                        position: "BOTTOM_LEFT",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 8,
-                        position: "BOTTOM_MID",
-                        isSet: false,
-                        tile: ""
-                    },
-                    {
-                        id: 9,
-                        position: "BOTTOM_RIGHT",
-                        isSet: false,
-                        tile: ""
-                    }
-                ]
+          activePlayerId: {
+                type: String
+            },
+            gridLayout: {
+              type: Array,
+              default: function () {
+                return [
+                {
+                  id: 1,
+                  position: "TOP_LEFT",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 2,
+                  position: "TOP_MID",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 3,
+                  position: "TOP_RIGHT",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 4,
+                  position: "MID_LEFT",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 5,
+                  position: "MID_MID",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 6,
+                  position: "MID_RIGHT",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 7,
+                  position: "BOTTOM_LEFT",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 8,
+                  position: "BOTTOM_MID",
+                  isSet: false,
+                  tile: ""
+                },
+                {
+                  id: 9,
+                  position: "BOTTOM_RIGHT",
+                  isSet: false,
+                  tile: ""
+                }
+              ] }
             }
         },
         methods: {
             updateCellValue: function (colId) {
-                console.log("colId on Parent: " + colId);
                 const col = this.gridLayout.find(element => element.id === colId);
                 console.log(col);
                 col.isSet = true;
@@ -173,6 +107,18 @@
                 this.$emit("updateGame", col);
             }
         },
+      computed: {
+        isActivePlayer: function () {
+          let authenticatedUser = this.$store.getters.authenticatedUser;
+          console.log("authenticatedUser: " + authenticatedUser.id);
+          console.log(this.activePlayerId);
+
+          if (authenticatedUser.id === this.activePlayerId) {
+            return true;
+          }
+          return false;
+        }
+      },
         components: {
             GameBoardCell
         }

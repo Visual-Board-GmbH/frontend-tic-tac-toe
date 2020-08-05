@@ -1,5 +1,5 @@
 <template>
-    <b-col :disabled="isSet" @click="setValue(colId)" :class="{disabled: isSet===true}" class="game-board-cell">
+    <b-col @click="setValue(colId)" :class="{disabled: (isSet===true || isActivePlayer!==true)}" class="game-board-cell">
         <span v-if="isSet">{{ tile }}</span>
     </b-col>
 </template>
@@ -7,7 +7,7 @@
 <script>
     export default {
         name: "GameBoardCell",
-        props: ["colId", "isSet", "position", "tile"],
+        props: ["colId", "isSet", "position", "tile", "isActivePlayer"],
         methods: {
             setValue: function (colId) {
                 console.log("colId: " + colId);

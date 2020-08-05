@@ -92,6 +92,8 @@ router.beforeEach(async (to, from, next) => {
             } else {
                 next();
             }
+        } else {
+           next();
         }
 });
 

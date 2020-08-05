@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>GameView</div>
+    <button class="btn"><router-link to="/play">Zurück zur Übersicht</router-link></button>
     <GameBoard></GameBoard>
   </div>
 </template>
