@@ -24,79 +24,9 @@
 <script>
     import GameBoardCell from "@/components/GameBoardCell";
 
-    // eslint-disable-next-line no-unused-vars
-
-
-
-
-
     export default {
         name: "GameBoardGrid",
-        props: {
-          activePlayerId: {
-                type: String
-            },
-            gridLayout: {
-              type: Array,
-              default: function () {
-                return [
-                {
-                  id: 1,
-                  position: "TOP_LEFT",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 2,
-                  position: "TOP_MID",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 3,
-                  position: "TOP_RIGHT",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 4,
-                  position: "MID_LEFT",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 5,
-                  position: "MID_MID",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 6,
-                  position: "MID_RIGHT",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 7,
-                  position: "BOTTOM_LEFT",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 8,
-                  position: "BOTTOM_MID",
-                  isSet: false,
-                  tile: ""
-                },
-                {
-                  id: 9,
-                  position: "BOTTOM_RIGHT",
-                  isSet: false,
-                  tile: ""
-                }
-              ] }
-            }
-        },
+        props: ["activePlayerId", "gridLayout"],
         methods: {
             updateCellValue: function (colId) {
                 const col = this.gridLayout.find(element => element.id === colId);

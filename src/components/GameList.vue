@@ -18,12 +18,15 @@ export default {
     openGame: function (item) {
 
       if (item.state.toLowerCase() === "open") {
-        console.log(item);
+        console.log("openGame: " + item.gameData);
         item.guest = 1;
         this.$mqtt.publish("ttt/guest_leaves_joins_game", JSON.stringify(item));
       }
       router.push({name: "Game", params: item.gameData});
     }
+  },
+  created() {
+      this.id = this.$route.params.id;
   }
 }
 </script>
