@@ -5,7 +5,7 @@
     </button>
     <b-modal
         id="modal-new-game"
-        title="BootstrapVue"
+        title="Neues Spiel"
         hide-footer
     >
       <b-form @submit.prevent="newGame">
