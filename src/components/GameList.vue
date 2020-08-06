@@ -16,17 +16,8 @@ export default {
   props: ["games"],
   methods: {
     openGame: function (item) {
-
-      if (item.state.toLowerCase() === "open") {
-        console.log("openGame: " + item.gameData);
-        item.guest = 1;
-        this.$mqtt.publish("ttt/guest_leaves_joins_game", JSON.stringify(item));
-      }
-      router.push({name: "Game", params: item.gameData});
+      router.push({name: "Game", params: {game: JSON.parse(item.allData)}});
     }
-  },
-  created() {
-      this.id = this.$route.params.id;
   }
 }
 </script>

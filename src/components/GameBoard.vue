@@ -1,5 +1,7 @@
 <template>
-  <GameBoardGrid :activePlayerId="activePlayerId" :gridLayout="gridLayout" @updateGame="updateMoves"></GameBoardGrid>
+  <b-container>
+    <GameBoardGrid :activePlayerId="activePlayerId" :gridLayout="gridLayout" @updateGame="updateGame"></GameBoardGrid>
+  </b-container>
 </template>
 
 <script>
@@ -8,20 +10,15 @@ import GameBoardGrid from "@/components/GameBoardGrid";
 export default {
   name: "GameBoard",
   props: ["moves", "guest", "host"],
-  data: () => {
-    return {
-      newMoves: [],
-    }
-  },
   methods: {
-    updateMoves: function (col) {
+    updateGame: function (position) {
       const move = {
-        count: this.newMoves.length + 1,
+        count: this.moves.length + 1,
         player: this.activePlayerId,
-        gridPosition: col.position,
+        gridPosition: position,
       }
 
-      this.newMoves.push(move);
+      this.$emit("updateGame", move);
     }
   },
   computed: {
@@ -92,10 +89,11 @@ export default {
         }
       ],
           index;
-      console.log("gridLayout - moves: " + moves);
+
+      console.log(this.moves);
       for (let i = 0, movesLength = moves.length; i < movesLength; i++) {
+        console.log(movesLength);
         index = gridLayout.findIndex(element => element.position === moves[i].gridPosition);
-        console.log(index);
         gridLayout[index].isSet = true;
         gridLayout[index].tile = moves[i].player === this.host ? "X" : "O";
       }

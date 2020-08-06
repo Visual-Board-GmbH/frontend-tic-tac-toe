@@ -70,6 +70,10 @@ export default {
           {
             key: "gameData",
             class: "d-none"
+          },
+          {
+            key: "allData",
+            class: "d-none"
           }
         ],
         items: []
@@ -114,15 +118,12 @@ export default {
     this.$mqtt.on('message', (topic, message) => {
       // message is Buffer
       if (topic === "ttt/new_game") {
-
-        let activeRequest = localStorage.getItem("activeRequest") ? JSON.parse(localStorage.getItem("activeRequest")) : [],
+        let activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
             newGame = JSON.parse(message.toString());
-        activeRequest = activeRequest.splice(activeRequest.indexOf(newGame.requestId), 1);
-        localStorage.setItem("activeRequest", JSON.stringify(activeRequest));
-        console.log(newGame);
-        if (Array.isArray(activeRequest) && activeRequest.indexOf(newGame.requestId) !== -1 && newGame.statusCode === 200 && newGame.serverResponse === true) {
+            activeRequest = activeRequest.splice(activeRequest.indexOf(newGame.requestId), 1);
+            sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
 
-          console.log(activeRequest + " - " + activeRequest.indexOf(newGame.requestId));
+        if (Array.isArray(activeRequest) && activeRequest.indexOf(newGame.requestId) !== -1 && newGame.statusCode === 200 && newGame.serverResponse === true) {
           this.$bvToast.toast("Neues Spiel mit dem Namen " + newGame.name + " wurde erstellt.", {
             title: "Neues Spiel erstellt",
             variant: "success",
@@ -130,9 +131,11 @@ export default {
             appendToast: true
           });
 
+          newGame.allData = JSON.stringify(newGame);
           //modify newGame to display host and guest
           newGame.host = newGame.gameData.host;
           newGame.guest = newGame.gameData.guest;
+
 
           this.myGames.items.push(newGame);
           //ToDo Identify User Obect
@@ -148,7 +151,7 @@ export default {
   methods: {
     newGame: function () {
       let requestId = Math.round((Math.random() + 1) * 1000),
-          activeRequest = localStorage.getItem("activeRequest") ? JSON.parse(localStorage.getItem("activeRequest")) : [],
+          activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
           newGame = {
             gameId: "",
             name: this.form.name,
@@ -169,7 +172,7 @@ export default {
 
       if (Array.isArray(activeRequest)) {
         activeRequest.push(requestId)
-        localStorage.setItem("activeRequest", JSON.stringify(activeRequest));
+        sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
       }
 
       this.$mqtt.publish("ttt/new_game", JSON.stringify(newGame))

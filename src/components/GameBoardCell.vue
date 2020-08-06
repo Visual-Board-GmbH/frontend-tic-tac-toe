@@ -10,7 +10,6 @@
         props: ["colId", "isSet", "position", "tile", "isActivePlayer"],
         methods: {
             setValue: function (colId) {
-                console.log("colId: " + colId);
                 this.$emit("setValueInCell", colId);
             }
         }
@@ -20,8 +19,8 @@
 <style scoped>
     .game-board-cell {
         border: 1px solid black;
-        height: 60px;
-        width: 60px;
+        height: 90px;
+        width: 90px;
         cursor: pointer;
     }
     .disabled {

@@ -1,5 +1,5 @@
 <template>
-  <b-container class="w-25 shadow mb-5 mt-5 bg-white rounded">
+  <b-container class="shadow bg-white rounded">
     <b-row>
       <b-col class="p-2 rounded text-center" :class="{active: activePlayer.toLowerCase() === 'host'}">{{ this.host }}</b-col>
       <b-col class="p-2 rounded text-center" :class="{active: activePlayer.toLowerCase() === 'guest'}">{{ this.guest }}</b-col>
@@ -28,6 +28,6 @@ export default {
 </script>
 <style scoped>
 .active {
-  background-color: darkgreen;
+  background-color: darkgray;
 }
 </style>

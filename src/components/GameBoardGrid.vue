@@ -1,9 +1,5 @@
 <template>
     <b-container class="game-board-grid">
-        <!--<b-row v-for="row in gridLayout" :key="row.id">
-            <GameBoardCell v-for="col in row.cols" :key="col.id" v-bind="col"
-                           ></GameBoardCell>
-        </b-row> -->
         <b-row cols="3">
             <GameBoardCell
                     v-for="col in this.gridLayout"
@@ -13,11 +9,10 @@
                     :tile="col.tile"
                     :position="col.position"
                     :isActivePlayer = "isActivePlayer"
-                    @setValueInCell="updateCellValue"
+                    @setValueInCell="updateCellValue(col.position)"
             >
             </GameBoardCell>
         </b-row>
-
     </b-container>
 </template>
 
@@ -28,18 +23,14 @@
         name: "GameBoardGrid",
         props: ["activePlayerId", "gridLayout"],
         methods: {
-            updateCellValue: function (colId) {
-                const col = this.gridLayout.find(element => element.id === colId);
-                console.log(col);
-                col.isSet = true;
-                col.tile = this.playerType === "host" ? "X" : "O";
-
-                this.$emit("updateGame", col);
+            updateCellValue: function (position) {
+              console.log(position)
+                this.$emit("updateGame", position);
             }
         },
       computed: {
         isActivePlayer: function () {
-          let authenticatedUser = this.$store.getters.authenticatedUser ? this.$store.getters.authenticatedUser : {};
+          let authenticatedUser = this.$store.getters.authenticatedUser ? this.$store.getters.authenticatedUser : {id: 2};
 
           // eslint-disable-next-line no-prototype-builtins
           if (authenticatedUser.hasOwnProperty("id") && authenticatedUser.id === this.activePlayerId) {
@@ -56,7 +47,7 @@
 
 <style scoped>
     .game-board-grid {
-        border: 1px solid black;
-        max-width: 180px;
+
+        max-width: 270px;
     }
 </style>
