@@ -1,14 +1,13 @@
 <template>
-    <b-container class="game-board-grid">
+    <b-container class="game-board-grid" :class="{disabled: isReadOnly }">
         <b-row cols="3">
             <GameBoardCell
-                    v-for="col in this.gridLayout"
+                    v-for="col in grid"
                     :key="col.id"
                     :colId="col.id"
-                    :isSet="col.isSet"
                     :tile="col.tile"
                     :position="col.position"
-                    :isActivePlayer = "isActivePlayer"
+                    :isSet="col.isSet"
                     @setValueInCell="updateCellValue(col.position)"
             >
             </GameBoardCell>
@@ -21,24 +20,13 @@
 
     export default {
         name: "GameBoardGrid",
-        props: ["activePlayerId", "gridLayout"],
+        props: ["grid", "isReadOnly"],
         methods: {
             updateCellValue: function (position) {
               console.log(position)
                 this.$emit("updateGame", position);
             }
         },
-      computed: {
-        isActivePlayer: function () {
-          let authenticatedUser = this.$store.getters.authenticatedUser ? this.$store.getters.authenticatedUser : {id: 2};
-
-          // eslint-disable-next-line no-prototype-builtins
-          if (authenticatedUser.hasOwnProperty("id") && authenticatedUser.id === this.activePlayerId) {
-            return true;
-          }
-          return false;
-        }
-      },
         components: {
             GameBoardCell
         }
@@ -47,7 +35,10 @@
 
 <style scoped>
     .game-board-grid {
+      max-width: 75%;
+    }
 
-        max-width: 270px;
+    .disabled {
+      pointer-events: none
     }
 </style>
