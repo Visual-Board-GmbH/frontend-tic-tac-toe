@@ -14,7 +14,7 @@ client.on("connect", function () {
     client.subscribe(
         "ttt/all_games",
         {
-            qos: 2
+            qos: 0
         },
         function (err) {
 
@@ -26,7 +26,19 @@ client.on("connect", function () {
     client.subscribe(
         "ttt/new_game",
         {
-            qos: 1
+            qos: 2
+        },
+        function (err) {
+
+            if(err) {
+                console.log("MQTT Subscribtion failed with error: " + err);
+            }
+        });
+
+    client.subscribe(
+        "ttt/game",
+        {
+            qos: 2
         },
         function (err) {
 

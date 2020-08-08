@@ -70,7 +70,6 @@ const actions = {
                 })
                 .then(resp => {
                     commit(AUTH_SUCCESS);
-                    console.log(resp);
                     if (resp.data != "" && resp.data != null) {
                         commit(SET_AUTHENTICATED_USER, resp);
                     }
@@ -95,7 +94,6 @@ const mutations = {
         state.status = "success";
     },
     [SET_AUTHENTICATED_USER]: (state, resp) => {
-        console.log("Atut User set");
         state.authenticatedUser = resp.data;
     },
     [AUTH_ERROR]: state => {

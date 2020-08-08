@@ -100,21 +100,20 @@
                     data: this.form,
                     headers: {'Content-Type': 'application/json'}
                 })
-                    .then(function (response) {
+                    .then(() => {
                         //handle success
-                        console.log(response);
                         router.push('/login')
                     })
-                    .catch(function (response) {
+                    .catch( (err) => {
                         //handle error
-                        console.log(response);
+                        console.log(err);
                     });
             },
             onReset(evt) {
                 evt.preventDefault()
                 // Reset our form values
-                this.form.email = ''
-                this.form.name = ''
+                this.form.email = ""
+                this.form.name = ""
                 this.form.food = null
                 this.form.checked = []
                 // Trick to reset/clear native browser form validation state
