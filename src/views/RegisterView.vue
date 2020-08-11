@@ -73,8 +73,8 @@
 </template>
 
 <script>
-
     import ticTacToeApi from "@/mixins/ticTacToeAPI";
+    import router from "@/router";
 
     export default {
         name: "RegisterView",
@@ -94,7 +94,6 @@
         methods: {
             onSubmit(evt) {
                 evt.preventDefault()
-
                 ticTacToeApi({
                     method: 'post',
                     url: '/v1/player',
@@ -104,12 +103,12 @@
                     .then(function (response) {
                         //handle success
                         console.log(response);
+                        router.push('/login')
                     })
                     .catch(function (response) {
                         //handle error
                         console.log(response);
                     });
-
             },
             onReset(evt) {
                 evt.preventDefault()
