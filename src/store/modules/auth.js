@@ -15,7 +15,7 @@ const state = {
 };
 
 const getters = {
-    isAuthenticated: state => state.authenticatedUser != null && state.authenticatedUser != "",
+    isAuthenticated: state => state.authenticatedUser != null,
     authStatus: state => state.status,
     authenticatedUser: state => {
         return state.authenticatedUser
@@ -56,6 +56,11 @@ const actions = {
     },
     [AUTH_LOGOUT]: ({commit}) => {
         return new Promise(resolve => {
+            ticTacToeApi({
+                url: "http://localhost:8081/v1/player/authenticate",
+                method: "DELETE",
+                headers: {'Content-Type': 'application/json'}
+            })
             commit(AUTH_LOGOUT);
             resolve();
         });

@@ -56,6 +56,13 @@
             login: function () {
                 this.$store.dispatch(AUTH_REQUEST, this.form).then(() => {
                     this.$router.push("/play");
+                }).catch(() => {
+                  this.$bvToast.toast("Ups! Da ist etwas schiefgelaufen. Bitte versuchen Sie es nochmals.", {
+                    title: "Login Fehlgeschlagen.",
+                    variant: "danger",
+                    solid: true,
+                    appendToast: true
+                  });
                 });
             }
         }

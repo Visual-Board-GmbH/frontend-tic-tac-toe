@@ -7,8 +7,8 @@ import UserView from "../views/UserView";
 import HistoryView from "../views/HistoryView";
 import GameView from "@/views/GameView";
 import NewGameView from "@/views/NewGameView";
-/*import store from "../store";
-import {AUTH_CHECK} from "../store/actions/auth";*/
+import store from "../store";
+import {AUTH_CHECK} from "../store/actions/auth";
 
 Vue.use(VueRouter);
 
@@ -82,11 +82,10 @@ const router = new VueRouter({
 
 
 //prevent user from accessing views if they are not authenticated
-/*router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from, next) => {
         //Check if the user is authenticated --> async
         await store.dispatch(AUTH_CHECK);
         if (to.matched.some((route) => route.meta.requiresAuth && to.name !== "Login")) {
-            console.log(to.name + " - isAuthenticated: " + store.getters.isAuthenticated)
             if (!store.getters.isAuthenticated) {
                 next({name: "Login"});
             } else {
@@ -95,6 +94,6 @@ const router = new VueRouter({
         } else {
            next();
         }
-});*/
+});
 
 export default router;

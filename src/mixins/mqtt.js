@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 
 const client = mqtt.connect('mqtt://localhost', {
-    port: 9001,
+    port: 19001,
     clientId: clientId,
     clean: false,
     keepAlive: true,
@@ -12,7 +12,7 @@ const client = mqtt.connect('mqtt://localhost', {
 
 client.on("connect", function () {
     client.subscribe(
-        "ttt/all_games",
+        "ttt/lobbies",
         {
             qos: 0
         },
