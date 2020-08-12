@@ -29,7 +29,7 @@ const actions = {
             commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/authenticate",
+                    url: "/v1/player/authenticate",
                     method: "POST",
                     data: user,
                     headers: {'Content-Type': 'application/json'}
@@ -57,7 +57,7 @@ const actions = {
     [AUTH_LOGOUT]: ({commit}) => {
         return new Promise(resolve => {
             ticTacToeApi({
-                url: "http://localhost:8081/v1/player/authenticate",
+                url: "/v1/player/authenticate",
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'}
             })
@@ -69,7 +69,7 @@ const actions = {
         return new Promise((resolve, reject) => {
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/authenticate/status",
+                    url: "/v1/player/authenticate/status",
                     method: "POST",
                     headers: {'Content-Type': 'application/json'}
                 })
