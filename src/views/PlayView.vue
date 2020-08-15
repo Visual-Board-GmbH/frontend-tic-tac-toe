@@ -40,7 +40,6 @@ export default {
   name: "PlayView",
   data() {
     return {
-      testGetter: this.$store.getters.activeGames,
       form: {
         name: ""
       },
@@ -54,7 +53,8 @@ export default {
             key: "name"
           },
           {
-            key: "gameState"
+            label: "Status",
+            key: "state"
           },
           {
             label: "Host",
@@ -80,7 +80,8 @@ export default {
             key: "name"
           },
           {
-            key: "gameState"
+            label: "Status",
+            key: "state"
           },
           {
             key: "host"
@@ -155,27 +156,7 @@ export default {
   },
   methods: {
     newGame: function () {
-      // let requestId = Math.round((Math.random() + 1) * 1000)
-      // activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-      // newGame = {
-      //   gameId: "",
-      //   name: this.form.name,
-      //   state: "OPEN",
-      //   lastModified: new Date(),
-      //   matrixIds: [],
-      //   gameData: {
-      //     host: this.$store.getters.authenticatedUser.id,
-      //     guest: 0,
-      //     moves: [],
-      //     winner: null
-      //   },
-      //   playerData: [],
-      //   statusCode: 0,
-      //   requestId: requestId,
-      //   serverResponse: false
-      // }
-
-      // if (Array.isArray(activeRequest)) {
+            // if (Array.isArray(activeRequest)) {
       //   activeRequest.push(requestId)
       //   sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
       // }

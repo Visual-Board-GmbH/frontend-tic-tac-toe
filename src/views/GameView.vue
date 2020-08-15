@@ -68,34 +68,24 @@ name: "GameView",
         ));
       }),
       tempMoves: [],
-      selectedMove: 1,
       isHistory: false
     }
   },
   methods: {
     revertMove: function (moves) {
       this.tempMoves = moves;
-      this.selectedMove = moves.length;
       this.isHistory = this.game.gameData.moves.length > this.tempMoves.length;
     },
     updateGame: function (move) {
-      this.game.gameData.moves.push(move);
-      this.tempMoves.push(move);
-      this.selectedMove = this.game.gameData.moves.length;
-
       let game = this.game;
 
       if (this.selectedMove === 1) {
         game.state = "ACTIVE";
       }
-
+      game.gameData.moves.push(move);
       game.statusCode = 0;
       game.serverResponse = false;
-
-      delete game.gameState;
-
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
-      console.log(game)
 
 
     }
@@ -108,18 +98,16 @@ name: "GameView",
         let resp = JSON.parse(message.toString());
 
         //Player Joins Game
-        if (resp.serverResponse == true && resp.statusCode === 200 && resp.gameState === "PENDING") {
+        if (resp.serverResponse == true && resp.statusCode === 200 && resp.state === "PENDING") {
           console.log("message: " + message);
           this.game = resp;
-          this.waitingForPlayer = false;
         }
 
         //Player Updated Game
-        if (resp.serverResponse == true && resp.statusCode === 200 && resp.gameState === "ACTIVE") {
+        if (resp.serverResponse == true && resp.statusCode === 200 && resp.state === "ACTIVE") {
           console.log("message: " + message);
           this.game = resp;
           this.tempMoves = resp.gameData.moves;
-          this.waitingForPlayer = false;
         }
       }
 
@@ -130,18 +118,16 @@ name: "GameView",
 
     });
 
-
-console.log(this.game);
   if (this.game) {
     this.tempMoves = this.game.gameData.moves;
 
     if (this.waitingForPlayer && this.$store.getters.authenticatedUser.id !== this.game.gameData.host) {
       let game = this.game;
-      game.gameState = "PENDING";
+      game.state = "PENDING";
       game.gameData.guest = this.$store.getters.authenticatedUser.id;
       game.statusCode = 0;
       game.serverResponse = false;
-      this.waitingForPlayer = false;
+
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
     }
 
@@ -157,10 +143,10 @@ console.log(this.game);
       return "HOST";
     },
     waitingForPlayer: function () {
-      return this.game.gameData.guest === 0 && this.game.gameState === "OPEN";
+      return this.game.gameData.guest === 0 && this.game.state === "OPEN";
     },
-    wasWon: function () {
-      return this.game.gameData.winner;
+    selectedMove: function () {
+      return this.game.gameData.moves.length === 0 ? 1 : this.game.gameData.moves.length;
     }
   }
 }
