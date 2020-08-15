@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 
 const client = mqtt.connect('mqtt://localhost', {
-    port: 9001,
+    port: 19001,
     clientId: clientId,
     clean: false,
     keepAlive: true,
@@ -12,9 +12,9 @@ const client = mqtt.connect('mqtt://localhost', {
 
 client.on("connect", function () {
     client.subscribe(
-        "ttt/all_games",
+        "ttt/lobbies",
         {
-            qos: 2
+            qos: 0
         },
         function (err) {
 
@@ -26,7 +26,19 @@ client.on("connect", function () {
     client.subscribe(
         "ttt/new_game",
         {
-            qos: 1
+            qos: 2
+        },
+        function (err) {
+
+            if(err) {
+                console.log("MQTT Subscribtion failed with error: " + err);
+            }
+        });
+
+    client.subscribe(
+        "ttt/game",
+        {
+            qos: 2
         },
         function (err) {
 

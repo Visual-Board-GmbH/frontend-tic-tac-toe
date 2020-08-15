@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <GameBoardGrid :moves="moves" :grid="gridLayout" :isReadOnly="(isHistory || isActivePlayer!==true)" @updateGame="updateGame"></GameBoardGrid>
+    <GameBoardGrid :moves="moves" :grid="gridLayout" :isReadOnly="(isHistory || isPlayerOnTheMove!==true || waitingForPlayer === true || winner !== null)" @updateGame="updateGame"></GameBoardGrid>
   </b-container>
 </template>
 
@@ -9,12 +9,13 @@ import GameBoardGrid from "@/components/GameBoardGrid";
 
 export default {
   name: "GameBoard",
-  props: ["moves", "host", "guest", "isHistory"],
+  props: ["moves", "host", "guest", "isHistory", "playerOnTheMove", "waitingForPlayer", "winner"],
   methods: {
     updateGame: function (position) {
+
       const move = {
         count: this.moves.length + 1,
-        player: 2,
+        player: this.playerOnTheMove,
         gridPosition: position,
       }
 
@@ -85,26 +86,29 @@ export default {
       for (let i = 0, movesLength = moves.length; i < movesLength; i++) {
         index = gridLayout.findIndex(element => element.position === moves[i].gridPosition);
         gridLayout[index].isSet = true;
-        gridLayout[index].tile = moves[i].player === this.host ? "X" : "O";
+        gridLayout[index].tile = moves[i].player === "HOST" ? "X" : "O";
       }
 
       return gridLayout;
     },
-    isActivePlayer: function () {
+    isPlayerOnTheMove: function () {
       let moves = this.moves,
-          activePlayer = this.host,
-          authenticatedUser = this.$store.getters.authenticatedUser ? this.$store.getters.authenticatedUser.id : {id: 2};
+          currentPlayer = this.host,
+          authenticatedUser = this.$store.getters.authenticatedUser ? this.$store.getters.authenticatedUser : {};
 
-      if (moves.length > 0 && moves[moves.length -1].player === this.host) {
-        activePlayer = this.guest;
+
+      if (moves.length > 0 && moves[moves.length -1].player === "HOST") {
+        currentPlayer = this.guest;
       }
 
+      console.log(currentPlayer + " : " + authenticatedUser);
       // eslint-disable-next-line no-prototype-builtins
-      if (authenticatedUser.hasOwnProperty("id") && authenticatedUser.id === activePlayer) {
+      if (authenticatedUser.hasOwnProperty("id") && authenticatedUser.id === currentPlayer) {
         return true;
       }
       return false;
-    }
+    },
+
   },
   components: {GameBoardGrid}
 }

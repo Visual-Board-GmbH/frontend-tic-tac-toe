@@ -15,7 +15,7 @@ const state = {
 };
 
 const getters = {
-    isAuthenticated: state => state.authenticatedUser != null && state.authenticatedUser != "",
+    isAuthenticated: state => state.authenticatedUser != null,
     authStatus: state => state.status,
     authenticatedUser: state => {
         return state.authenticatedUser
@@ -29,7 +29,7 @@ const actions = {
             commit(AUTH_REQUEST);
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/authenticate",
+                    url: "/v1/player/authenticate",
                     method: "POST",
                     data: user,
                     headers: {'Content-Type': 'application/json'}
@@ -56,6 +56,11 @@ const actions = {
     },
     [AUTH_LOGOUT]: ({commit}) => {
         return new Promise(resolve => {
+            ticTacToeApi({
+                url: "/v1/player/authenticate",
+                method: "DELETE",
+                headers: {'Content-Type': 'application/json'}
+            })
             commit(AUTH_LOGOUT);
             resolve();
         });
@@ -64,13 +69,12 @@ const actions = {
         return new Promise((resolve, reject) => {
             ticTacToeApi(
                 {
-                    url: "http://localhost:8081/v1/player/authenticate/status",
+                    url: "/v1/player/authenticate/status",
                     method: "POST",
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(resp => {
                     commit(AUTH_SUCCESS);
-                    console.log(resp);
                     if (resp.data != "" && resp.data != null) {
                         commit(SET_AUTHENTICATED_USER, resp);
                     }
@@ -95,7 +99,6 @@ const mutations = {
         state.status = "success";
     },
     [SET_AUTHENTICATED_USER]: (state, resp) => {
-        console.log("Atut User set");
         state.authenticatedUser = resp.data;
     },
     [AUTH_ERROR]: state => {

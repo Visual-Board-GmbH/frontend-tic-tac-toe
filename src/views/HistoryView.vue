@@ -40,6 +40,10 @@
             {
               key: "gameData",
               class: "d-none"
+            },
+            {
+              key: "allData",
+              class: "d-none"
             }
           ],
           items: []
@@ -51,7 +55,7 @@
         // message is Buffer
         if (topic === "ttt/player_gameHistory") {
           let gameData = JSON.parse(message.toString());
-          console.log(gameData);
+console.log(gameData);
           //ToDo Identify User Obect
           //this.gameHistory = gameData.
         }

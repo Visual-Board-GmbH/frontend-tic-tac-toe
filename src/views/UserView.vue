@@ -147,7 +147,6 @@ export default {
       }).catch(err => {
         console.log(err);
       })
-      console.log(JSON.stringify(this.form));
     },
     onTileImageXChange: function (e) {
       let file = e.target.files[0];

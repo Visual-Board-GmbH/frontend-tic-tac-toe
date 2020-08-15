@@ -61,10 +61,10 @@
             </b-form-group>
 
             <b-form-group id="input-group-5">
-                    <b-form-checkbox v-model="termsAccepted" :checked="terms">Datenschutzbestimmungen</b-form-checkbox>
+                    <b-form-checkbox v-model="termsAccepted">Datenschutzbestimmungen</b-form-checkbox>
             </b-form-group>
 
-            <b-button block type="submit" v-if="this.termsAccepted" variant="primary">Registrieren</b-button>
+            <b-button block type="submit" :disabled="!this.termsAccepted" variant="primary">Registrieren</b-button>
             <small>Bereits registriert?
                 <router-link :to="{name: 'Login'}">Anmelden</router-link>
             </small>
@@ -100,21 +100,25 @@
                     data: this.form,
                     headers: {'Content-Type': 'application/json'}
                 })
-                    .then(function (response) {
+                    .then(() => {
                         //handle success
-                        console.log(response);
                         router.push('/login')
                     })
-                    .catch(function (response) {
-                        //handle error
-                        console.log(response);
+                    .catch( (err) => {
+                        console.log("Registration failed with the following error: " + err);
+                        this.$bvToast.toast("Ups! Da ist etwas schiefgelaufen. Bitte versuchen Sie es nochmals.", {
+                          title: "Registration Fehlgeschlagen.",
+                          variant: "danger",
+                          solid: true,
+                          appendToast: true
+                        });
                     });
             },
             onReset(evt) {
                 evt.preventDefault()
                 // Reset our form values
-                this.form.email = ''
-                this.form.name = ''
+                this.form.email = ""
+                this.form.name = ""
                 this.form.food = null
                 this.form.checked = []
                 // Trick to reset/clear native browser form validation state

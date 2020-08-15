@@ -34,8 +34,6 @@ const actions = {
             serverResponse: false
         }
 
-        console.log(newGame);
-
         mqtt.publish("ttt/new_game", JSON.stringify(newGame))
         commit(ADD_ACTIVE_REQUEST, requestId);
     }

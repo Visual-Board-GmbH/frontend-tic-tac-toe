@@ -114,30 +114,36 @@ export default {
 
   },
   created: function () {
-    //ToDo Publish Message to Recieve all games
+    //ToDo Recieve all games
     this.$mqtt.on('message', (topic, message) => {
       // message is Buffer
       if (topic === "ttt/new_game") {
         let activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-            newGame = JSON.parse(message.toString());
-            activeRequest = activeRequest.splice(activeRequest.indexOf(newGame.requestId), 1);
+            resp = JSON.parse(message.toString());
+            activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
+
+
+
             sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
 
-        if (Array.isArray(activeRequest) && activeRequest.indexOf(newGame.requestId) !== -1 && newGame.statusCode === 200 && newGame.serverResponse === true) {
-          this.$bvToast.toast("Neues Spiel mit dem Namen " + newGame.name + " wurde erstellt.", {
-            title: "Neues Spiel erstellt",
-            variant: "success",
-            solid: true,
-            appendToast: true
-          });
+        if (resp.serverResponse == true && resp.statusCode === 200) {
+          console.log("message: " + message);
+          if (Array.isArray(activeRequest) && activeRequest.indexOf(resp.requestId) !== -1) {
+            this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
+              title: "Neues Spiel erstellt",
+              variant: "success",
+              solid: true,
+              appendToast: true
+            });
+          }
 
-          newGame.allData = JSON.stringify(newGame);
+          resp.allData = JSON.stringify(resp);
           //modify newGame to display host and guest
-          newGame.host = newGame.gameData.host;
-          newGame.guest = newGame.gameData.guest;
+          resp.host = resp.gameData.host;
+          resp.guest = resp.gameData.guest;
 
 
-          this.myGames.items.push(newGame);
+          this.myGames.items.push(resp);
           //ToDo Identify User Obect
           /*this.myGames.items = gameData.filter(game => (game.host === "1" || game.guest === "1"));
           this.openGames.items = gameData.filter(game => game.guest === "");*/
@@ -159,7 +165,7 @@ export default {
             lastModified: new Date(),
             matrixIds: [],
             gameData: {
-              host: "2",//ToDo get dynamic id -> this.$store.getters.authenticatedUser.id,
+              host: this.$store.getters.authenticatedUser.id,
               guest: 0,
               moves: [],
               winner: null
