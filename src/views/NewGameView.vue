@@ -45,7 +45,7 @@ export default {
       const testGame = [{
         gameId: "1",
         name: "Test1",
-        state: "open",
+        state: "OPEN",
         lastModified: "28.07.2020",
         matrixId: "",
         host: "2",

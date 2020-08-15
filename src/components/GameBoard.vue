@@ -101,7 +101,6 @@ export default {
         currentPlayer = this.guest;
       }
 
-      console.log(currentPlayer + " : " + authenticatedUser);
       // eslint-disable-next-line no-prototype-builtins
       if (authenticatedUser.hasOwnProperty("id") && authenticatedUser.id === currentPlayer) {
         return true;

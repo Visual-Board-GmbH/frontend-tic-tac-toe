@@ -14,6 +14,14 @@ Vue.use(VueRouter);
 
 const routes = [
     {
+        path: "*",
+        name: "App",
+        redirect: "/play",
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
         path: "/",
         name: "App",
         redirect: "/play",
@@ -60,7 +68,7 @@ const routes = [
         }
     },
     {
-        path: "/game",
+        path: "/game/:id",
         name: "Game",
         component: GameView,
         props: true
@@ -85,7 +93,7 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
         //Check if the user is authenticated --> async
         await store.dispatch(AUTH_CHECK);
-        if (to.matched.some((route) => route.meta.requiresAuth && to.name !== "Login")) {
+        if (to.matched.some((route) => route.meta.requiresAuth)) {
             if (!store.getters.isAuthenticated) {
                 next({name: "Login"});
             } else {

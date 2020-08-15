@@ -26,9 +26,9 @@
       </b-form>
     </b-modal>
     <h3>Meine Spiele</h3>
-    <GameList :games="myGames"></GameList>
+    <GameList :games="myGames" :items="myGameItems"></GameList>
     <h3>Offene Spiele</h3>
-    <GameList :games="openGames"></GameList>
+    <GameList :games="openGames" :items="openGameItems"></GameList>
   </b-container>
 </template>
 
@@ -50,34 +50,42 @@ export default {
             class: "d-none"
           },
           {
-            key: "name"
+            key: "name",
+            sortable:true
           },
           {
-            key: "state"
+            label: "Status",
+            key: "state",
+            sortable:true
           },
           {
-            key: "host"
+            label: "Host",
+            key: "gameData.host",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "HOST").displayName;
+            }
           },
           {
-            key: "guest"
+            label: "Guest",
+            key: "gameData.guest",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
+            }
           },
           {
-            key: "lastModified"
+            key: "lastModified",
+            formatter: value => {
+              let date = new Date(parseInt(value, 10))
+              return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+            },
+            sortable:true
           },
           {
-            key: "matrixId",
-            class: "d-none"
-          },
-          {
-            key: "gameData",
-            class: "d-none"
-          },
-          {
-            key: "allData",
+            key: "playerData",
             class: "d-none"
           }
         ],
-        items: this.$store.getters.activeGames
+        items: []
       },
       openGames: {
         fields: [
@@ -86,26 +94,38 @@ export default {
             class: "d-none"
           },
           {
-            key: "name"
+            key: "name",
+            sortable:true
           },
           {
-            key: "state"
+            label: "Status",
+            key: "state",
+            sortable:true
           },
           {
-            key: "host"
+            label: "Host",
+            key: "gameData.host",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "HOST").displayName;
+            }
           },
           {
-            key: "guest"
+            label: "Guest",
+            key: "gameData.guest",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
+            }
           },
           {
-            key: "lastModified"
+            key: "lastModified",
+            formatter: value => {
+              let date = new Date(parseInt(value, 10))
+              return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+            },
+            sortable:true
           },
           {
-            key: "matrixId",
-            class: "d-none"
-          },
-          {
-            key: "gameData",
+            key: "playerData",
             class: "d-none"
           }
         ],
@@ -114,39 +134,47 @@ export default {
     }
 
   },
+  computed: {
+    myGameItems: function () {
+      return this.$store.getters.myGames;
+    },
+    openGameItems: function () {
+      return this.$store.getters.openGames;
+    }
+  },
   created: function () {
 
     this.$mqtt.on('message', (topic, message) => {
+
       // message is Buffer
       if (topic === "ttt/new_game") {
         // let activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-            let resp = JSON.parse(message);
-            // activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
+        let resp = JSON.parse(message);
+        // activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
 
 
-
-            // sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
+        // sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
 
         if (resp.serverResponse == true && resp.statusCode === 200) {
-          console.log("message: " + message);
+          console.log("message: " + resp);
           // if (Array.isArray(activeRequest) && activeRequest.indexOf(resp.requestId) !== -1) {
-            this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
-              title: "Neues Spiel erstellt",
-              variant: "success",
-              solid: true,
-              appendToast: true
-            });
+          this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
+            title: "Neues Spiel erstellt",
+            variant: "success",
+            solid: true,
+            appendToast: true
+          });
           // }
 
-          resp.allData = JSON.stringify(resp);
           //modify newGame to display host and guest
           resp.host = resp.gameData.host;
           resp.guest = resp.gameData.guest;
         }
       }
 
-      if (topic === "ttt/lobbies") {
+      if (topic === "ttt/all_games") {
         let resp = JSON.parse(message);
+
         this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
       }
     });
@@ -156,27 +184,7 @@ export default {
   },
   methods: {
     newGame: function () {
-      // let requestId = Math.round((Math.random() + 1) * 1000)
-          // activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-          // newGame = {
-          //   gameId: "",
-          //   name: this.form.name,
-          //   state: "OPEN",
-          //   lastModified: new Date(),
-          //   matrixIds: [],
-          //   gameData: {
-          //     host: this.$store.getters.authenticatedUser.id,
-          //     guest: 0,
-          //     moves: [],
-          //     winner: null
-          //   },
-          //   playerData: [],
-          //   statusCode: 0,
-          //   requestId: requestId,
-          //   serverResponse: false
-          // }
-
-      // if (Array.isArray(activeRequest)) {
+            // if (Array.isArray(activeRequest)) {
       //   activeRequest.push(requestId)
       //   sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
       // }

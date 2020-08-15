@@ -12,7 +12,7 @@ const client = mqtt.connect('mqtt://localhost', {
 
 client.on("connect", function () {
     client.subscribe(
-        "ttt/lobbies",
+        "ttt/all_games",
         {
             qos: 0
         },
@@ -22,6 +22,18 @@ client.on("connect", function () {
             console.log("MQTT Subscribtion failed with error: " + err);
         }
     });
+
+    client.subscribe(
+        "ttt/all_game_histories",
+        {
+            qos: 0
+        },
+        function (err) {
+
+            if(err) {
+                console.log("MQTT Subscribtion failed with error: " + err);
+            }
+        });
 
     client.subscribe(
         "ttt/new_game",

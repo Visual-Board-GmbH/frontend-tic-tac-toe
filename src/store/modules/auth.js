@@ -65,7 +65,7 @@ const actions = {
             resolve();
         });
     },
-    [AUTH_CHECK]: ({commit}) => {
+    [AUTH_CHECK]: ({commit, getters}) => {
         return new Promise((resolve, reject) => {
             ticTacToeApi(
                 {
@@ -75,7 +75,17 @@ const actions = {
                 })
                 .then(resp => {
                     commit(AUTH_SUCCESS);
-                    if (resp.data != "" && resp.data != null) {
+                    if (resp.data != "" && resp.data != null &&
+                        (
+                            getters.authenticatedUser === null ||
+                            (
+                                getters.authenticatedUser != null &&
+                                // eslint-disable-next-line no-prototype-builtins
+                                getters.authenticatedUser.hasOwnProperty("id") &&
+                                getters.authenticatedUser.id !== resp.data.id
+                            )
+                        )
+                    ) {
                         commit(SET_AUTHENTICATED_USER, resp);
                     }
                     resolve(resp);
