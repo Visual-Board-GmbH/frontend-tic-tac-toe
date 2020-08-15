@@ -34,10 +34,11 @@
 
 <script>
 import GameList from "@/components/GameList";
+import {BUILD_ACTIVE_GAME_LIST, NEW_GAME} from "@/store/actions/game";
 
 export default {
   name: "PlayView",
-  data: () => {
+  data() {
     return {
       form: {
         name: ""
@@ -76,7 +77,7 @@ export default {
             class: "d-none"
           }
         ],
-        items: []
+        items: this.$store.getters.activeGames
       },
       openGames: {
         fields: [
@@ -114,40 +115,39 @@ export default {
 
   },
   created: function () {
-    //ToDo Recieve all games
+
     this.$mqtt.on('message', (topic, message) => {
       // message is Buffer
       if (topic === "ttt/new_game") {
-        let activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-            resp = JSON.parse(message.toString());
-            activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
+        // let activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
+            let resp = JSON.parse(message);
+            // activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
 
 
 
-            sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
+            // sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
 
         if (resp.serverResponse == true && resp.statusCode === 200) {
           console.log("message: " + message);
-          if (Array.isArray(activeRequest) && activeRequest.indexOf(resp.requestId) !== -1) {
+          // if (Array.isArray(activeRequest) && activeRequest.indexOf(resp.requestId) !== -1) {
             this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
               title: "Neues Spiel erstellt",
               variant: "success",
               solid: true,
               appendToast: true
             });
-          }
+          // }
 
           resp.allData = JSON.stringify(resp);
           //modify newGame to display host and guest
           resp.host = resp.gameData.host;
           resp.guest = resp.gameData.guest;
-
-
-          this.myGames.items.push(resp);
-          //ToDo Identify User Obect
-          /*this.myGames.items = gameData.filter(game => (game.host === "1" || game.guest === "1"));
-          this.openGames.items = gameData.filter(game => game.guest === "");*/
         }
+      }
+
+      if (topic === "ttt/lobbies") {
+        let resp = JSON.parse(message);
+        this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
       }
     });
   },
@@ -156,32 +156,33 @@ export default {
   },
   methods: {
     newGame: function () {
-      let requestId = Math.round((Math.random() + 1) * 1000),
-          activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-          newGame = {
-            gameId: "",
-            name: this.form.name,
-            state: "OPEN",
-            lastModified: new Date(),
-            matrixIds: [],
-            gameData: {
-              host: this.$store.getters.authenticatedUser.id,
-              guest: 0,
-              moves: [],
-              winner: null
-            },
-            playerData: [],
-            statusCode: 0,
-            requestId: requestId,
-            serverResponse: false
-          }
+      // let requestId = Math.round((Math.random() + 1) * 1000)
+          // activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
+          // newGame = {
+          //   gameId: "",
+          //   name: this.form.name,
+          //   state: "OPEN",
+          //   lastModified: new Date(),
+          //   matrixIds: [],
+          //   gameData: {
+          //     host: this.$store.getters.authenticatedUser.id,
+          //     guest: 0,
+          //     moves: [],
+          //     winner: null
+          //   },
+          //   playerData: [],
+          //   statusCode: 0,
+          //   requestId: requestId,
+          //   serverResponse: false
+          // }
 
-      if (Array.isArray(activeRequest)) {
-        activeRequest.push(requestId)
-        sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
-      }
+      // if (Array.isArray(activeRequest)) {
+      //   activeRequest.push(requestId)
+      //   sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
+      // }
+      this.$store.dispatch(NEW_GAME, this.form.name);
 
-      this.$mqtt.publish("ttt/new_game", JSON.stringify(newGame))
+      //this.$mqtt.publish("ttt/new_game", JSON.stringify(newGame))
       this.$root.$emit("bv::hide::modal", "modal-new-game");
 
     }

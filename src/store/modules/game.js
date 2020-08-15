@@ -1,20 +1,23 @@
 import {
     NEW_GAME,
-    ADD_ACTIVE_REQUEST
+    ADD_GAME_TO_GAME_LIST,
+    BUILD_ACTIVE_GAME_LIST
 } from "../actions/game";
 import mqtt from "@/mixins/mqtt";
 //import router from "@/router";
 
 const state = {
-    activeRequests:  []
+    activeGames:  [],
+    closedGames: []
 };
 
 const getters = {
-    activeRequests: state => { return state.activeRequests}
+    activeGames: state => { return state.activeGames},
+    closedGames: state => { return state.closedGames}
 };
 
 const actions = {
-    [NEW_GAME]: ({commit}, name) => {
+    [NEW_GAME]: ({rootGetters}, name) => {
         let requestId = Math.round((Math.random() + 1) * 1000),
             newGame = {
             gameId: "",
@@ -23,7 +26,7 @@ const actions = {
             lastModified: new Date(),
             matrixIds: [],
             gameData: {
-                host: "2",//ToDo get dynamic id -> this.$store.getters.authenticatedUser.id,
+                host: rootGetters.authenticatedUser.id,
                 guest: 0,
                 moves: [],
                 winner: null
@@ -35,13 +38,40 @@ const actions = {
         }
 
         mqtt.publish("ttt/new_game", JSON.stringify(newGame))
-        commit(ADD_ACTIVE_REQUEST, requestId);
+    },
+    [BUILD_ACTIVE_GAME_LIST]: ({commit, getters}, allGames) => {
+            if(Array.isArray(allGames) && allGames.length > 0) {
+                let actualActiveGames = getters.activeGames,
+                update = false;
+
+
+                allGames.forEach((game) => {
+
+                    let filteredGame = actualActiveGames.filter((g) => g.id === game.id);
+                    if (Array.isArray(filteredGame) && filteredGame.length > 0) {
+                        for (let prop in filteredGame) {
+                            // eslint-disable-next-line no-prototype-builtins
+                            if (game.hasOwnProperty(prop)) {
+                                if (game[prop] !== filteredGame[prop]) {
+                                    filteredGame[prop] = game[prop];
+                                    update = true;
+                                }
+                            }
+                        }
+                        if (update) {
+                            commit(ADD_GAME_TO_GAME_LIST, filteredGame);
+                        }
+                    } else {
+                        commit(ADD_GAME_TO_GAME_LIST, game);
+                    }
+                });
+            }
     }
 };
 
 const mutations = {
-    [ADD_ACTIVE_REQUEST]: (state, requestId) => {
-        state.activeRequests.push(requestId);
+    [ADD_GAME_TO_GAME_LIST]: (state, game) => {
+        state.activeGames.push(game);
     }
 };
 
