@@ -26,9 +26,9 @@
       </b-form>
     </b-modal>
     <h3>Meine Spiele</h3>
-    <GameList :games="myGames"></GameList>
+    <GameList :games="myGames" :items="myGameItems"></GameList>
     <h3>Offene Spiele</h3>
-    <GameList :games="openGames"></GameList>
+    <GameList :games="openGames" :items="openGameItems"></GameList>
   </b-container>
 </template>
 
@@ -40,6 +40,7 @@ export default {
   name: "PlayView",
   data() {
     return {
+      testGetter: this.$store.getters.activeGames,
       form: {
         name: ""
       },
@@ -53,31 +54,21 @@ export default {
             key: "name"
           },
           {
-            key: "state"
+            key: "gameState"
           },
           {
-            key: "host"
+            label: "Host",
+            key: "gameData.host"
           },
           {
-            key: "guest"
+            label: "Guest",
+            key: "gameData.guest"
           },
           {
             key: "lastModified"
           },
-          {
-            key: "matrixId",
-            class: "d-none"
-          },
-          {
-            key: "gameData",
-            class: "d-none"
-          },
-          {
-            key: "allData",
-            class: "d-none"
-          }
         ],
-        items: this.$store.getters.activeGames
+        items: []
       },
       openGames: {
         fields: [
@@ -89,7 +80,7 @@ export default {
             key: "name"
           },
           {
-            key: "state"
+            key: "gameState"
           },
           {
             key: "host"
@@ -114,39 +105,47 @@ export default {
     }
 
   },
+  computed: {
+    myGameItems: function () {
+      return this.$store.getters.myGames;
+    },
+    openGameItems: function () {
+      return this.$store.getters.openGames;
+    }
+  },
   created: function () {
 
     this.$mqtt.on('message', (topic, message) => {
+
       // message is Buffer
       if (topic === "ttt/new_game") {
         // let activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-            let resp = JSON.parse(message);
-            // activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
+        let resp = JSON.parse(message);
+        // activeRequest = activeRequest.splice(activeRequest.indexOf(resp.requestId), 1);
 
 
-
-            // sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
+        // sessionStorage.setItem("activeRequest", JSON.stringify(activeRequest));
 
         if (resp.serverResponse == true && resp.statusCode === 200) {
-          console.log("message: " + message);
+          console.log("message: " + resp);
           // if (Array.isArray(activeRequest) && activeRequest.indexOf(resp.requestId) !== -1) {
-            this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
-              title: "Neues Spiel erstellt",
-              variant: "success",
-              solid: true,
-              appendToast: true
-            });
+          this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
+            title: "Neues Spiel erstellt",
+            variant: "success",
+            solid: true,
+            appendToast: true
+          });
           // }
 
-          resp.allData = JSON.stringify(resp);
           //modify newGame to display host and guest
           resp.host = resp.gameData.host;
           resp.guest = resp.gameData.guest;
         }
       }
 
-      if (topic === "ttt/lobbies") {
+      if (topic === "ttt/all_games") {
         let resp = JSON.parse(message);
+
         this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
       }
     });
@@ -157,24 +156,24 @@ export default {
   methods: {
     newGame: function () {
       // let requestId = Math.round((Math.random() + 1) * 1000)
-          // activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
-          // newGame = {
-          //   gameId: "",
-          //   name: this.form.name,
-          //   state: "OPEN",
-          //   lastModified: new Date(),
-          //   matrixIds: [],
-          //   gameData: {
-          //     host: this.$store.getters.authenticatedUser.id,
-          //     guest: 0,
-          //     moves: [],
-          //     winner: null
-          //   },
-          //   playerData: [],
-          //   statusCode: 0,
-          //   requestId: requestId,
-          //   serverResponse: false
-          // }
+      // activeRequest = sessionStorage.getItem("activeRequest") ? JSON.parse(sessionStorage.getItem("activeRequest")) : [],
+      // newGame = {
+      //   gameId: "",
+      //   name: this.form.name,
+      //   state: "OPEN",
+      //   lastModified: new Date(),
+      //   matrixIds: [],
+      //   gameData: {
+      //     host: this.$store.getters.authenticatedUser.id,
+      //     guest: 0,
+      //     moves: [],
+      //     winner: null
+      //   },
+      //   playerData: [],
+      //   statusCode: 0,
+      //   requestId: requestId,
+      //   serverResponse: false
+      // }
 
       // if (Array.isArray(activeRequest)) {
       //   activeRequest.push(requestId)

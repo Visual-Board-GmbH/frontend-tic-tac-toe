@@ -1,6 +1,6 @@
 <template>
   <b-table
-      :items="games.items"
+      :items="this.items || games.items"
       :fields="games.fields"
       @row-clicked="openGame"
       show-empty
@@ -13,10 +13,10 @@ import router from "@/router";
 
 export default {
   name: "GameList",
-  props: ["games"],
+  props: ["games", "items"],
   methods: {
     openGame: function (item) {
-      router.push({name: "Game", params: {game: JSON.parse(item.allData)}});
+      router.push({name: "Game", params: {id: item.gameId}});
     }
   }
 }

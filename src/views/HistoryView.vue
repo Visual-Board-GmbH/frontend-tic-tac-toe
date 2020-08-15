@@ -7,6 +7,7 @@
 
 <script>
   import GameList from "@/components/GameList";
+  import {BUILD_ACTIVE_GAME_LIST} from "@/store/actions/game";
 
   export default {
     name: "HistoryView",
@@ -51,13 +52,16 @@
       }
     },
     created: function () {
+
+      this.myGames.items = this.$store.getters.closedGames.filter((game) => {
+        game.gameData.host === this.$store.getters.authenticatedUser.id || game.gameData.guest === this.$store.getters.authenticatedUser.id;
+      });
+
       this.$mqtt.on('message', (topic, message) => {
         // message is Buffer
-        if (topic === "ttt/player_gameHistory") {
-          let gameData = JSON.parse(message.toString());
-console.log(gameData);
-          //ToDo Identify User Obect
-          //this.gameHistory = gameData.
+        if (topic === "ttt/all_games") {
+          let resp = JSON.parse(message);
+          this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
         }
       });
     },

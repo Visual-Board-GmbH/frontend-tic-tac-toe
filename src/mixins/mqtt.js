@@ -12,7 +12,7 @@ const client = mqtt.connect('mqtt://localhost', {
 
 client.on("connect", function () {
     client.subscribe(
-        "ttt/lobbies",
+        "ttt/all_games",
         {
             qos: 0
         },
