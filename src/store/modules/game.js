@@ -3,7 +3,9 @@ import {
     ADD_GAME_TO_GAME_LIST,
     BUILD_ACTIVE_GAME_LIST,
     UPDATE_GAME_IN_GAME_LIST,
-    REMOVE_GAME_IN_GAME_LIST
+    REMOVE_GAME_IN_GAME_LIST,
+    BUILD_GAME_HISTORY,
+    ADD_GAME_TO_HISTORY
 } from "../actions/game";
 import mqtt from "@/mixins/mqtt";
 //import router from "@/router";
@@ -32,7 +34,12 @@ const getters = {
     },
     closedGames: state => {
         return state.closedGames
-    }
+    },
+    myClosedGames: (state, rootGetters) => {
+        return state.closedGames.filter(g => {
+            return g.gameData.host === rootGetters.authenticatedUser.id || g.gameData.guest === rootGetters.authenticatedUser.id;
+        })
+    },
 };
 
 const actions = {
@@ -83,17 +90,22 @@ const actions = {
                     commit(ADD_GAME_TO_GAME_LIST, game);
                 }
             });
-
-            storedGames.forEach((storedGame, index) => {
-                console.log(idsNotToRemove);
-                if (idsNotToRemove.indexOf(storedGame.gameId) === -1) {
-                    console.log(storedGame);
-                    commit(REMOVE_GAME_IN_GAME_LIST, index);
-                }
-            });
-
         }
-    }
+        storedGames.forEach((storedGame, index) => {
+            if (idsNotToRemove.indexOf(storedGame.gameId) === -1) {
+                commit(REMOVE_GAME_IN_GAME_LIST, index);
+            }
+        });
+    },
+    [BUILD_GAME_HISTORY]: ({commit, getters}, gameHistory) => {
+        let actualGameHistory = getters.closedGames;
+        gameHistory.forEach((game) => {
+            if (!actualGameHistory.find(g => g != null && g.id === game.id)) {
+                commit(ADD_GAME_TO_HISTORY, game);
+            }
+        });
+
+    },
 };
 
 const mutations = {
@@ -102,13 +114,13 @@ const mutations = {
     },
     [UPDATE_GAME_IN_GAME_LIST]: (state, game, index) => {
         state.activeGames.splice(index, 1);
-        console.log("Before: " + state.activeGames);
-
         state.activeGames.push(game);
-        console.log("After: " + state.activeGames);
     },
     [REMOVE_GAME_IN_GAME_LIST]: (state, index) => {
         state.activeGames.splice(index, 1);
+    },
+    [ADD_GAME_TO_HISTORY]: (state, game) => {
+        state.closedGames.push(game);
     }
 };
 

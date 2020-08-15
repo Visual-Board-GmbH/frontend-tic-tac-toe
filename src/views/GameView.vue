@@ -4,7 +4,7 @@
       <b-col>
         <b-row>
           <b-col cols="1">
-            <router-link tag="button" to="/play" class="btn"><i class="fas fa-arrow-left"></i></router-link>
+            <router-link tag="button" to="\play" @click.native="goBack()" class="btn"><i class="fas fa-arrow-left"></i></router-link>
           </b-col>
           <b-col sm="auto"><h3>{{ this.game.name }}</h3></b-col>
           <b-col cols="7">
@@ -13,6 +13,7 @@
                 :guest="game.gameData.guest"
                 :activePlayer="playerOnTheMove"
                 :winner="game.gameData.winner"
+                :playerData="game.playerData"
             ></PlayerBoard>
           </b-col>
         </b-row>
@@ -21,6 +22,7 @@
             <GameHistory
               v-if="game.gameData.moves.length > 0"
               :moves="game.gameData.moves"
+              :playerData="game.playerData"
               :isHistory="isHistory"
               :selectedMove="selectedMove"
               @goBackInHistory="revertMove"
@@ -51,7 +53,8 @@
 import GameBoard from "@/components/GameBoard";
 import GameHistory from "@/components/GameHistory";
 import PlayerBoard from "@/components/PlayerBoard";
-import {BUILD_ACTIVE_GAME_LIST} from "@/store/actions/game";
+import {BUILD_ACTIVE_GAME_LIST, BUILD_GAME_HISTORY} from "@/store/actions/game";
+import router from "@/router";
 
 export default {
 name: "GameView",
@@ -59,7 +62,7 @@ name: "GameView",
   data() {
     return {
       game: this.$store.getters.allGames.find((g) => {
-        return g.gameId === this.$route.params.id && ((
+        return ((g.gameId === parseInt(this.$route.params.id, 10)) || (g.id === parseInt(this.$route.params.id, 10))) && ((
             g.gameData.host === this.$store.getters.authenticatedUser.id ||
             g.gameData.guest === this.$store.getters.authenticatedUser.id
         ) || (
@@ -88,6 +91,9 @@ name: "GameView",
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
 
 
+    },
+    goBack: function () {
+      router.go(-1);
     }
   },
   created: function () {
@@ -99,14 +105,11 @@ name: "GameView",
 
         //Player Joins Game
         if (resp.serverResponse == true && resp.statusCode === 200 && resp.state === "PENDING") {
-          console.log("message: " + message);
           this.game = resp;
         }
 
         //Player Updated Game
         if (resp.serverResponse == true && resp.statusCode === 200 && resp.state === "ACTIVE") {
-          console.log("message: " + message);
-          this.game = resp;
           this.tempMoves = resp.gameData.moves;
         }
       }
@@ -114,6 +117,11 @@ name: "GameView",
       if (topic === "ttt/all_games") {
         let resp = JSON.parse(message);
         this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
+      }
+
+      if (topic === "ttt/all_game_histories") {
+        let resp = JSON.parse(message);
+        this.$store.dispatch(BUILD_GAME_HISTORY, resp);
       }
 
     });
@@ -146,7 +154,7 @@ name: "GameView",
       return this.game.gameData.guest === 0 && this.game.state === "OPEN";
     },
     selectedMove: function () {
-      return this.game.gameData.moves.length === 0 ? 1 : this.game.gameData.moves.length;
+      return this.tempMoves.length === 0 ? 1 : this.tempMoves.length;
     }
   }
 }

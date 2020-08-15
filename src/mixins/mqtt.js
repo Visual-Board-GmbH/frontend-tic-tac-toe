@@ -24,6 +24,18 @@ client.on("connect", function () {
     });
 
     client.subscribe(
+        "ttt/all_game_histories",
+        {
+            qos: 0
+        },
+        function (err) {
+
+            if(err) {
+                console.log("MQTT Subscribtion failed with error: " + err);
+            }
+        });
+
+    client.subscribe(
         "ttt/new_game",
         {
             qos: 2

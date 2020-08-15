@@ -16,7 +16,7 @@ export default {
   props: ["games", "items"],
   methods: {
     openGame: function (item) {
-      router.push({name: "Game", params: {id: item.gameId}});
+      router.push({name: "Game", params: {id: item.gameId || item.id}});
     }
   }
 }

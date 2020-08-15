@@ -50,23 +50,40 @@ export default {
             class: "d-none"
           },
           {
-            key: "name"
+            key: "name",
+            sortable:true
           },
           {
             label: "Status",
-            key: "state"
+            key: "state",
+            sortable:true
           },
           {
             label: "Host",
-            key: "gameData.host"
+            key: "gameData.host",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "HOST").displayName;
+            }
           },
           {
             label: "Guest",
-            key: "gameData.guest"
+            key: "gameData.guest",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
+            }
           },
           {
-            key: "lastModified"
+            key: "lastModified",
+            formatter: value => {
+              let date = new Date(parseInt(value, 10))
+              return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+            },
+            sortable:true
           },
+          {
+            key: "playerData",
+            class: "d-none"
+          }
         ],
         items: []
       },
@@ -77,27 +94,38 @@ export default {
             class: "d-none"
           },
           {
-            key: "name"
+            key: "name",
+            sortable:true
           },
           {
             label: "Status",
-            key: "state"
+            key: "state",
+            sortable:true
           },
           {
-            key: "host"
+            label: "Host",
+            key: "gameData.host",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "HOST").displayName;
+            }
           },
           {
-            key: "guest"
+            label: "Guest",
+            key: "gameData.guest",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
+            }
           },
           {
-            key: "lastModified"
+            key: "lastModified",
+            formatter: value => {
+              let date = new Date(parseInt(value, 10))
+              return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+            },
+            sortable:true
           },
           {
-            key: "matrixId",
-            class: "d-none"
-          },
-          {
-            key: "gameData",
+            key: "playerData",
             class: "d-none"
           }
         ],

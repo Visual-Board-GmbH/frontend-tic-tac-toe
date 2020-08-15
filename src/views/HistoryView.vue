@@ -1,13 +1,13 @@
 <template>
   <b-container>
     <h3>Vergangene Spiele</h3>
-    <GameList :games="gameHistory"></GameList>
+    <GameList :games="gameHistory" :items="myClosedGame"></GameList>
   </b-container>
 </template>
 
 <script>
   import GameList from "@/components/GameList";
-  import {BUILD_ACTIVE_GAME_LIST} from "@/store/actions/game";
+  import {BUILD_GAME_HISTORY} from "@/store/actions/game";
 
   export default {
     name: "HistoryView",
@@ -16,35 +16,16 @@
         gameHistory: {
           fields: [
             {
-              key: "gameId",
+              key: "id",
               class: "d-none"
             },
             {
-              key: "name"
+              label: "Host",
+              key: "gameData.host"
             },
             {
-              key: "state"
-            },
-            {
-              key: "host"
-            },
-            {
-              key: "guest"
-            },
-            {
-              key: "lastModified"
-            },
-            {
-              key: "matrixId",
-              class: "d-none"
-            },
-            {
-              key: "gameData",
-              class: "d-none"
-            },
-            {
-              key: "allData",
-              class: "d-none"
+              label: "Guest",
+              key: "gameData.guest"
             }
           ],
           items: []
@@ -52,18 +33,18 @@
       }
     },
     created: function () {
-
-      this.myGames.items = this.$store.getters.closedGames.filter((game) => {
-        game.gameData.host === this.$store.getters.authenticatedUser.id || game.gameData.guest === this.$store.getters.authenticatedUser.id;
-      });
-
       this.$mqtt.on('message', (topic, message) => {
         // message is Buffer
-        if (topic === "ttt/all_games") {
+        if (topic === "ttt/all_game_histories") {
           let resp = JSON.parse(message);
-          this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
+          this.$store.dispatch(BUILD_GAME_HISTORY, resp);
         }
       });
+    },
+    computed: {
+      myClosedGame: function () {
+        return this.$store.getters.myClosedGames;
+      }
     },
     components: {
       GameList
