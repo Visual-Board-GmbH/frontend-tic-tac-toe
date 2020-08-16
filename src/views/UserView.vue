@@ -108,63 +108,63 @@
 </template>
 
 <script>
-import ticTacToeApi from "@/mixins/ticTacToeAPI";
+  import ticTacToeApi from "@/mixins/ticTacToeAPI";
 
-export default {
-  name: "UserView",
-  data: () => {
-    return {
-      form: {
-        name: "",
-        userName: "",
-        nickname: "",
-        password: "",
-        tileImageX: null,
-        tileImageO: null,
-        tileImageXUrl: null,
-        tileImageOUrl: null
+  export default {
+    name: "UserView",
+    data: () => {
+      return {
+        form: {
+          name: "",
+          userName: "",
+          nickname: "",
+          password: "",
+          tileImageX: null,
+          tileImageO: null,
+          tileImageXUrl: null,
+          tileImageOUrl: null
+        }
       }
-    }
-  },
-  methods: {
-    updateUser: function () {
-
-      let userData = {
-            name: this.form.name,
-            username: this.form.userName,
-            nickname: this.form.nickname,
-            password: this.form.password
-          },
-          authenticatedUser = this.$store.getters.authenticatedUser;
-
-      ticTacToeApi({
-        url: "http://localhost:8081/v1/player/" + authenticatedUser.id,
-        data: userData,
-        method: "POST",
-        headers: {'Content-Type': 'application/json'}
-      }).then(resp => {
-        console.log(resp);
-      }).catch(err => {
-        console.log(err);
-      })
     },
-    onTileImageXChange: function (e) {
-      let file = e.target.files[0];
-      this.form.tileImageXUrl = URL.createObjectURL(file);
+    methods: {
+      updateUser: function () {
+
+        let userData = {
+              name: this.form.name,
+              username: this.form.userName,
+              nickname: this.form.nickname,
+              password: this.form.password
+            },
+            authenticatedUser = this.$store.getters.authenticatedUser;
+
+        ticTacToeApi({
+          url: "http://" + location.hostname + ":8081/v1/player/" + authenticatedUser.id,
+          data: userData,
+          method: "POST",
+          headers: {'Content-Type': 'application/json'}
+        }).then(resp => {
+          console.log(resp);
+        }).catch(err => {
+          console.log(err);
+        })
+      },
+      onTileImageXChange: function (e) {
+        let file = e.target.files[0];
+        this.form.tileImageXUrl = URL.createObjectURL(file);
+      },
+      onTileImageOChange: function (e) {
+        let file = e.target.files[0];
+        this.form.tileImageOUrl = URL.createObjectURL(file);
+      }
     },
-    onTileImageOChange: function (e) {
-      let file = e.target.files[0];
-      this.form.tileImageOUrl = URL.createObjectURL(file);
-    }
-  },
-  created: function () {
-    let authenticatedUser = this.$store.getters.authenticatedUser;
-    this.form.name = authenticatedUser.name;
-    this.form.userName = authenticatedUser.username;
-    this.form.nickname = authenticatedUser.nickname;
-  },
-  components: {}
-}
+    created: function () {
+      let authenticatedUser = this.$store.getters.authenticatedUser;
+      this.form.name = authenticatedUser.name;
+      this.form.userName = authenticatedUser.username;
+      this.form.nickname = authenticatedUser.nickname;
+    },
+    components: {}
+  }
 </script>
 
 <style scoped>

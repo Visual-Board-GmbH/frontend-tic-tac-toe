@@ -1,8 +1,9 @@
 //https://www.npmjs.com/package/mqtt#client
 import mqtt from "mqtt";
+
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 
-const client = mqtt.connect('mqtt://localhost', {
+const client = mqtt.connect('mqtt://' + location.hostname, {
     port: 19001,
     clientId: clientId,
     clean: false,
