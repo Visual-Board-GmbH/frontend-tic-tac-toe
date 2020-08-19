@@ -6,6 +6,17 @@
           <b-col cols="1">
             <router-link tag="button" to="\play" @click.native="goBack()" class="btn"><i class="fas fa-arrow-left"></i></router-link>
           </b-col>
+          <b-col>
+            <v-select
+                placeholder="Bitte wählen Sie eine Matrix"
+                v-model="selectedMatrixIds"
+                :options="matrixIds"
+                multiple=""
+                :reduce="matrixId => matrixId.value"
+                @input="sendMatrixIds"
+                @created="getMatrixIds"
+            ></v-select>
+          </b-col>
           <b-col sm="auto"><h3>{{ this.game.name }}</h3></b-col>
           <b-col cols="7">
             <PlayerBoard
@@ -57,6 +68,7 @@ import GameHistory from "@/components/GameHistory";
 import PlayerBoard from "@/components/PlayerBoard";
 import {BUILD_ACTIVE_GAME_LIST, BUILD_GAME_HISTORY} from "@/store/actions/game";
 import router from "@/router";
+import ticTacToeApi from "@/mixins/ticTacToeAPI";
 
 export default {
 name: "GameView",
@@ -73,10 +85,20 @@ name: "GameView",
         ));
       }),
       tempMoves: [],
-      isHistory: false
+      isHistory: false,
+      matrixIds: [],
+      selectedMatrixIds: [],
     }
   },
   methods: {
+    sendMatrixIds: function () {
+      let game = this.game;
+      game.gameData.moves = [];
+      game.matrixIds = this.selectedMatrixIds;
+      game.statusCode = 0;
+      game.serverResponse = false;
+      this.$mqtt.publish("ttt/game", JSON.stringify(game));
+    },
     revertMove: function (moves) {
       this.tempMoves = moves;
       this.isHistory = this.game.gameData.moves.length > this.tempMoves.length;
@@ -87,18 +109,36 @@ name: "GameView",
       if (this.selectedMove === 1) {
         game.state = "ACTIVE";
       }
+      game.matrixIds = this.selectedMatrixIds;
       game.gameData.moves.push(move);
       game.statusCode = 0;
       game.serverResponse = false;
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
-
-
     },
     goBack: function () {
       router.go(-1);
+    },
+    getMatrixIds: function () {
+      ticTacToeApi({
+        url: "/v1/matrix",
+        method: "GET"
+      }).then(resp => {
+        resp.data.forEach((matrixId) => {
+          console.log(matrixId);
+          if (!this.matrixIds.find((id) => id.value === matrixId)) {
+            this.matrixIds.push({
+              value: matrixId,
+              label: "Matrix " + matrixId
+            });
+          }
+        });
+      }).catch(err => {
+        console.log(err);
+      })
     }
   },
   created: function () {
+    this.getMatrixIds();
 
     this.$mqtt.on('message', (topic, message) => {
       // message is Buffer
@@ -112,8 +152,11 @@ name: "GameView",
 
         //Player Updated Game
         if (resp.serverResponse == true && resp.statusCode === 200 && resp.state === "ACTIVE") {
+          this.game = resp;
           this.tempMoves = resp.gameData.moves;
         }
+
+        this.selectedMatrixIds = this.game.matrixIds;
       }
 
       if (topic === "ttt/all_games") {
@@ -130,6 +173,8 @@ name: "GameView",
 
   if (this.game) {
     this.tempMoves = this.game.gameData.moves;
+    this.selectedMatrixIds = this.game.matrixIds;
+
 
     if (this.waitingForPlayer && this.$store.getters.authenticatedUser.id !== this.game.gameData.host) {
       let game = this.game;

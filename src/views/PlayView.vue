@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <!-- <router-link to="/new_game" class="new-game"><i class="fas fa-plus"></i><span class="ml-2">Neues Spiel</router-link></span>-->
-    <button class="btn" @click="openNewGameModal"><i class="fas fa-plus"></i><span class="ml-2">Neues Spiel</span>
+    <button class="btn" v-b-modal.modal-new-game><i class="fas fa-plus"></i><span class="ml-2">Neues Spiel</span>
     </button>
     <b-modal
         id="modal-new-game"
@@ -143,7 +143,6 @@ export default {
     }
   },
   created: function () {
-
     this.$mqtt.on('message', (topic, message) => {
 
       // message is Buffer
@@ -193,19 +192,6 @@ export default {
       //this.$mqtt.publish("ttt/new_game", JSON.stringify(newGame))
       this.$root.$emit("bv::hide::modal", "modal-new-game");
 
-    },
-    openNewGameModal: function () {
-      /*ticTacToeApi({
-        url: "/v1/player/" + userId + "/image",
-        method: "GET",
-        responseType: 'arraybuffer'
-      }).then(resp => {
-        let image = new Buffer(resp.data, 'binary').toString('base64');
-        commit(SET_PLAYER_IMAGE, {image, userId});
-      }).catch(err => {
-        console.log(err);
-      })*/
-          this.$bvModal.show("modal-new-game")
     }
   }
 }

@@ -12,10 +12,13 @@
   import '@fortawesome/fontawesome-free/js/all.js'
   import 'bootstrap/dist/css/bootstrap.css'
   import 'bootstrap-vue/dist/bootstrap-vue.css'
+  import vSelect from 'vue-select'
   import Navbar from "./components/Navbar";
+  import 'vue-select/dist/vue-select.css';
 
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
+  Vue.component('v-select', vSelect);
 
 
 
