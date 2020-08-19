@@ -34,8 +34,7 @@
 
 <script>
 import GameList from "@/components/GameList";
-import {BUILD_ACTIVE_GAME_LIST, NEW_GAME, SET_PLAYER_IMAGE} from "@/store/actions/game";
-import ticTacToeApi from "@/mixins/ticTacToeAPI";
+import {BUILD_ACTIVE_GAME_LIST, NEW_GAME} from "@/store/actions/game";
 
 export default {
   name: "PlayView",
