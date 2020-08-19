@@ -5,14 +5,17 @@ import {
     UPDATE_GAME_IN_GAME_LIST,
     REMOVE_GAME_IN_GAME_LIST,
     BUILD_GAME_HISTORY,
-    ADD_GAME_TO_HISTORY
+    ADD_GAME_TO_HISTORY,
+    SET_PLAYER_IMAGE
 } from "../actions/game";
 import mqtt from "@/mixins/mqtt";
+import ticTacToeApi from "@/mixins/ticTacToeAPI";
 //import router from "@/router";
 
 const state = {
     activeGames: [],
     closedGames: [],
+    playerImage: {}
 };
 
 const getters = {
@@ -40,6 +43,10 @@ const getters = {
             return g.gameData.host === rootGetters.authenticatedUser.id || g.gameData.guest === rootGetters.authenticatedUser.id;
         })
     },
+    getPlayerImage: state => userId => {
+        // eslint-disable-next-line no-prototype-builtins
+        return state.playerImage.hasOwnProperty(userId) ? state.playerImage[userId] : null;
+    }
 };
 
 const actions = {
@@ -106,6 +113,21 @@ const actions = {
         });
 
     },
+    [SET_PLAYER_IMAGE]: ({commit}, userIds) => {
+
+        userIds.forEach(function(userId) {
+            ticTacToeApi({
+                url: "/v1/player/" + userId + "/image",
+                method: "GET",
+                responseType: 'arraybuffer'
+            }).then(resp => {
+                let image = new Buffer(resp.data, 'binary').toString('base64');
+                commit(SET_PLAYER_IMAGE, {image, userId});
+            }).catch(err => {
+                console.log(err);
+            })
+        })
+    }
 };
 
 const mutations = {
@@ -121,6 +143,9 @@ const mutations = {
     },
     [ADD_GAME_TO_HISTORY]: (state, game) => {
         state.closedGames.push(game);
+    },
+    [SET_PLAYER_IMAGE] : (state, {image, userId}) => {
+        state.playerImage[userId] = "data:image/png;base64," + image;
     }
 };
 

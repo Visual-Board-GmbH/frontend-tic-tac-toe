@@ -6,6 +6,7 @@
                     :key="col.id"
                     :colId="col.id"
                     :tile="col.tile"
+                    :image="col.image"
                     :position="col.position"
                     :isSet="col.isSet"
                     @setValueInCell="updateCellValue(col.position)"

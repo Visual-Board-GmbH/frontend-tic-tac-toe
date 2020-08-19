@@ -32,7 +32,9 @@
             <GameBoard
               :moves="tempMoves"
               :host="game.gameData.host"
+              :hostImg="hostImg"
               :guest="game.gameData.guest"
+              :guestImg="guestImg"
               :isHistory="isHistory"
               :playerOnTheMove="playerOnTheMove"
               :waitingForPlayer="waitingForPlayer"
@@ -155,6 +157,12 @@ name: "GameView",
     },
     selectedMove: function () {
       return this.tempMoves.length === 0 ? 1 : this.tempMoves.length;
+    },
+    hostImg: function () {
+      return this.$store.getters.getPlayerImage(this.game.gameData.host);
+    },
+    guestImg: function () {
+      return this.$store.getters.getPlayerImage(this.game.gameData.guest);
     }
   }
 }

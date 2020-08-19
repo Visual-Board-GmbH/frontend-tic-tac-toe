@@ -9,7 +9,7 @@ import GameBoardGrid from "@/components/GameBoardGrid";
 
 export default {
   name: "GameBoard",
-  props: ["moves", "host", "guest", "isHistory", "playerOnTheMove", "waitingForPlayer", "winner"],
+  props: ["moves", "host", "guest", "isHistory", "playerOnTheMove", "waitingForPlayer", "winner", "hostImg", "guestImg"],
   methods: {
     updateGame: function (position) {
 
@@ -29,55 +29,64 @@ export default {
               id: 1,
               position: "TOP_LEFT",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 2,
               position: "TOP_MID",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 3,
               position: "TOP_RIGHT",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 4,
               position: "MID_LEFT",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 5,
               position: "MID_MID",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 6,
               position: "MID_RIGHT",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 7,
               position: "BOTTOM_LEFT",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 8,
               position: "BOTTOM_MID",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             },
             {
               id: 9,
               position: "BOTTOM_RIGHT",
               isSet: false,
-              tile: ""
+              tile: "",
+              image: ""
             }
           ],
           moves = this.moves,
@@ -86,7 +95,12 @@ export default {
       for (let i = 0, movesLength = moves.length; i < movesLength; i++) {
         index = gridLayout.findIndex(element => element.position === moves[i].gridPosition);
         gridLayout[index].isSet = true;
+
+
+
+
         gridLayout[index].tile = moves[i].player === "HOST" ? "X" : "O";
+        gridLayout[index].image = moves[i].player === "HOST" ? this.hostImg : this.guestImg;
       }
 
       return gridLayout;
