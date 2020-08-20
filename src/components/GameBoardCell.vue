@@ -1,7 +1,7 @@
 <template>
     <b-col @click="setValue(colId)" :class="{disabled: isSet===true}" class="game-board-cell align-self-center">
-        <div class="game-board-cell-content text-center" v-if="isSet && (image === '')">{{ tile }}</div>
-        <div class="game-board-cell-content text-center" v-else-if="isSet && (image !== '')"><img :src="image" :alt="tile"></div>
+        <div class="game-board-cell-content text-center" v-if="isSet && (image !== '' && image != null)"><img :src="image" :alt="tile"></div>
+      <div class="game-board-cell-content text-center" v-else>{{ tile }}</div>
     </b-col>
 </template>
 

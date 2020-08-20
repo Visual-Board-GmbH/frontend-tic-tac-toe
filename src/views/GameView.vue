@@ -142,7 +142,7 @@ export default {
       })
     }
   },
-  created: function () {
+  mounted: function () {
     this.getMatrixIds();
 
     this.$mqtt.on('message', (topic, message) => {
@@ -209,13 +209,10 @@ export default {
       return this.tempMoves.length === 0 ? 1 : this.tempMoves.length;
     },
     hostImg: function () {
-      return this.$store.getters.getPlayerImage(this.game.gameData.host);
+      return this.$store.getters.getPlayerImages[this.game.gameData.host];
     },
     guestImg: function () {
-      return this.$store.getters.getPlayerImage(this.game.gameData.guest);
-    },
-    getImage: function () {
-      return this.$store.getters.getPlayerImages;
+      return this.$store.getters.getPlayerImages["1"];
     }
   }
 }

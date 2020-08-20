@@ -168,7 +168,7 @@
         this.form.name = authenticatedUser.name;
         this.form.userName = authenticatedUser.username;
         this.form.nickname = authenticatedUser.nickname;
-        this.form.tileImageSrc= this.$store.getters.getPlayerImage(this.$store.getters.authenticatedUser.id)
+        this.form.tileImageSrc= this.$store.getters.getPlayerImages[this.game.gameData.guest]
         this.dataLoaded = true;
       })
 

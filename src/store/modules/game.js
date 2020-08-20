@@ -10,7 +10,7 @@ import {
 } from "../actions/game";
 import mqtt from "@/mixins/mqtt";
 import ticTacToeApi from "@/mixins/ticTacToeAPI";
-//import router from "@/router";
+import Vue from "vue";
 
 const state = {
     activeGames: [],
@@ -42,12 +42,6 @@ const getters = {
         return state.closedGames.filter(g => {
             return g.gameData.host === rootGetters.authenticatedUser.id || g.gameData.guest === rootGetters.authenticatedUser.id;
         })
-    },
-    getPlayerImage: state => userId => {
-        // console.log("UserId: " + userId);
-        // console.log("playerImages: " + JSON.stringify(state.playerImage));
-        // eslint-disable-next-line no-prototype-builtins
-        return state.playerImage.hasOwnProperty(userId) ? state.playerImage[userId] : null;
     },
     getPlayerImages: state => state.playerImage
 };
@@ -153,7 +147,8 @@ const mutations = {
         state.closedGames.push(game);
     },
     [SET_PLAYER_IMAGE] : (state, {image, userId}) => {
-        state.playerImage[userId] = "data:image/png;base64," + image;
+        Vue.set(state.playerImage, userId,"data:image/png;base64," + image);
+
     }
 };
 
