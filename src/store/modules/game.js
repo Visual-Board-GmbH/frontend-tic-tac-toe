@@ -44,9 +44,12 @@ const getters = {
         })
     },
     getPlayerImage: state => userId => {
+        // console.log("UserId: " + userId);
+        // console.log("playerImages: " + JSON.stringify(state.playerImage));
         // eslint-disable-next-line no-prototype-builtins
         return state.playerImage.hasOwnProperty(userId) ? state.playerImage[userId] : null;
-    }
+    },
+    getPlayerImages: state => state.playerImage
 };
 
 const actions = {
@@ -78,15 +81,18 @@ const actions = {
         if (Array.isArray(allGames) && allGames.length > 0 && Array.isArray(storedGames)) {
             allGames.forEach((game) => {
                 let storedGameIndex = storedGames.findIndex(g => g != null && g.gameId === game.gameId)
+
                 if (storedGameIndex !== -1) {
                     let storedGame = storedGames[storedGameIndex];
+
                     for (let prop in game) {
                         // eslint-disable-next-line no-prototype-builtins
-                        if (storedGame.hasOwnProperty(prop)) {
+                        if (storedGame.hasOwnProperty(prop) && (prop !== "statusCode" && prop !== "requestId" && prop !== "serverResponse")) {
                             if ((typeof storedGame[prop] !== "object" && game[prop] !== storedGame[prop]) ||
                                 (typeof storedGame[prop] === "object" && JSON.stringify(game[prop]) !== JSON.stringify(storedGame[prop]))
                             ) {
-                                commit(UPDATE_GAME_IN_GAME_LIST, game, storedGameIndex);
+                                // console.log("storedGameIndex : " + storedGameIndex);
+                                commit(UPDATE_GAME_IN_GAME_LIST, {game, storedGameIndex});
                                 break;
                             }
                         }
@@ -134,8 +140,10 @@ const mutations = {
     [ADD_GAME_TO_GAME_LIST]: (state, game) => {
         state.activeGames.push(game);
     },
-    [UPDATE_GAME_IN_GAME_LIST]: (state, game, index) => {
-        state.activeGames.splice(index, 1);
+    [UPDATE_GAME_IN_GAME_LIST]: (state, {game, storedGameIndex}) => {
+        // console.log("New Game: " + JSON.stringify(game));
+        // console.log("Old game: " + storedGameIndex);
+        state.activeGames.splice(storedGameIndex, 1);
         state.activeGames.push(game);
     },
     [REMOVE_GAME_IN_GAME_LIST]: (state, index) => {
