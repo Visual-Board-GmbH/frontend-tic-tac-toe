@@ -12,12 +12,6 @@
           </b-collapse>
         </b-navbar>
       </b-container>
-  <!--<b-nav align="center">
-      <router-link to="/play"><i class="fas fa-play fa-3x"></i></router-link>
-      <router-link to="/history"><i class="fas fa-history fa-3x"></i></router-link>
-      <router-link to="/user"><span class="mr-2 userName">{{this.$store.getters.authenticatedUser.nickname}}</span><i class="fas fa-user fa-3x"></i></router-link>
-      <router-link to="/logout"><i class="fas fa-sign-out-alt fa-3x"></i></router-link>
-  </b-nav>-->
 </template>
 
 <script>

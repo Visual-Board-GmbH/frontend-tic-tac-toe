@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <GameBoardGrid :moves="moves" :grid="gridLayout" :isReadOnly="(isHistory || isPlayerOnTheMove!==true || waitingForPlayer === true || winner !== null)" @updateGame="updateGame"></GameBoardGrid>
+    <GameBoardGrid :moves="moves" :grid="gridLayout" :isReadOnly="(isHistory || isPlayerOnTheMove!==true || waitingForPlayer === true || winner !== null || serverError)" @updateGame="updateGame"></GameBoardGrid>
   </b-container>
 </template>
 
@@ -9,7 +9,7 @@ import GameBoardGrid from "@/components/GameBoardGrid";
 
 export default {
   name: "GameBoard",
-  props: ["moves", "host", "guest", "isHistory", "playerOnTheMove", "waitingForPlayer", "winner", "hostImg", "guestImg"],
+  props: ["moves", "host", "guest", "isHistory", "playerOnTheMove", "waitingForPlayer", "winner", "hostImg", "guestImg", "serverError"],
   methods: {
     updateGame: function (position) {
 

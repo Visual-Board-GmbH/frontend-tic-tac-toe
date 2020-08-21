@@ -48,6 +48,7 @@
                 :guest="game.gameData.guest"
                 :guestImg="guestImg"
                 :isHistory="isHistory"
+                :serverError="isServerError"
                 :playerOnTheMove="playerOnTheMove"
                 :waitingForPlayer="waitingForPlayer"
                 :winner="game.gameData.winner"
@@ -247,6 +248,9 @@ export default {
             g.gameData.guest === 0
         ));
       })
+    },
+    isServerError: function () {
+      return this.game.statusCode === 5000 & this.game.serverResponse === true;
     }
   }
 }
