@@ -5,14 +5,17 @@ import {
     UPDATE_GAME_IN_GAME_LIST,
     REMOVE_GAME_IN_GAME_LIST,
     BUILD_GAME_HISTORY,
-    ADD_GAME_TO_HISTORY
+    ADD_GAME_TO_HISTORY,
+    SET_PLAYER_IMAGE
 } from "../actions/game";
 import mqtt from "@/mixins/mqtt";
-//import router from "@/router";
+import ticTacToeApi from "@/mixins/ticTacToeAPI";
+import Vue from "vue";
 
 const state = {
     activeGames: [],
     closedGames: [],
+    playerImage: {}
 };
 
 const getters = {
@@ -40,6 +43,7 @@ const getters = {
             return g.gameData.host === rootGetters.authenticatedUser.id || g.gameData.guest === rootGetters.authenticatedUser.id;
         })
     },
+    getPlayerImages: state => state.playerImage
 };
 
 const actions = {
@@ -71,15 +75,18 @@ const actions = {
         if (Array.isArray(allGames) && allGames.length > 0 && Array.isArray(storedGames)) {
             allGames.forEach((game) => {
                 let storedGameIndex = storedGames.findIndex(g => g != null && g.gameId === game.gameId)
+
                 if (storedGameIndex !== -1) {
                     let storedGame = storedGames[storedGameIndex];
+
                     for (let prop in game) {
                         // eslint-disable-next-line no-prototype-builtins
-                        if (storedGame.hasOwnProperty(prop)) {
+                        if (storedGame.hasOwnProperty(prop) && (prop !== "statusCode" && prop !== "requestId" && prop !== "serverResponse")) {
                             if ((typeof storedGame[prop] !== "object" && game[prop] !== storedGame[prop]) ||
                                 (typeof storedGame[prop] === "object" && JSON.stringify(game[prop]) !== JSON.stringify(storedGame[prop]))
                             ) {
-                                commit(UPDATE_GAME_IN_GAME_LIST, game, storedGameIndex);
+                                // console.log("storedGameIndex : " + storedGameIndex);
+                                commit(UPDATE_GAME_IN_GAME_LIST, {game, storedGameIndex});
                                 break;
                             }
                         }
@@ -106,14 +113,31 @@ const actions = {
         });
 
     },
+    [SET_PLAYER_IMAGE]: ({commit}, userIds) => {
+
+        userIds.forEach(function(userId) {
+            ticTacToeApi({
+                url: "/v1/player/" + userId + "/image",
+                method: "GET",
+                responseType: 'arraybuffer'
+            }).then(resp => {
+                let image = new Buffer(resp.data, 'binary').toString('base64');
+                commit(SET_PLAYER_IMAGE, {image, userId});
+            }).catch(err => {
+                console.log(err);
+            })
+        })
+    }
 };
 
 const mutations = {
     [ADD_GAME_TO_GAME_LIST]: (state, game) => {
         state.activeGames.push(game);
     },
-    [UPDATE_GAME_IN_GAME_LIST]: (state, game, index) => {
-        state.activeGames.splice(index, 1);
+    [UPDATE_GAME_IN_GAME_LIST]: (state, {game, storedGameIndex}) => {
+        // console.log("New Game: " + JSON.stringify(game));
+        // console.log("Old game: " + storedGameIndex);
+        state.activeGames.splice(storedGameIndex, 1);
         state.activeGames.push(game);
     },
     [REMOVE_GAME_IN_GAME_LIST]: (state, index) => {
@@ -121,6 +145,10 @@ const mutations = {
     },
     [ADD_GAME_TO_HISTORY]: (state, game) => {
         state.closedGames.push(game);
+    },
+    [SET_PLAYER_IMAGE] : (state, {image, userId}) => {
+        Vue.set(state.playerImage, userId,"data:image/png;base64," + image);
+
     }
 };
 

@@ -4,7 +4,19 @@
       <b-col>
         <b-row>
           <b-col cols="1">
-            <router-link tag="button" to="\play" @click.native="goBack()" class="btn"><i class="fas fa-arrow-left"></i></router-link>
+            <router-link tag="button" to="\play" @click.native="goBack()" class="btn"><i class="fas fa-arrow-left"></i>
+            </router-link>
+          </b-col>
+          <b-col>
+            <v-select
+                placeholder="Bitte wählen Sie eine Matrix"
+                v-model="selectedMatrixIds"
+                :options="matrixIds"
+                multiple=""
+                :reduce="matrixId => matrixId.value"
+                @input="sendMatrixIds"
+                @created="getMatrixIds"
+            ></v-select>
           </b-col>
           <b-col sm="auto"><h3>{{ this.game.name }}</h3></b-col>
           <b-col cols="7">
@@ -20,25 +32,27 @@
         <b-row class="mt-5">
           <b-col cols="5">
             <GameHistory
-              v-if="game.gameData.moves.length > 0"
-              :moves="game.gameData.moves"
-              :playerData="game.playerData"
-              :isHistory="isHistory"
-              :selectedMove="selectedMove"
-              @goBackInHistory="revertMove"
-          ></GameHistory>
+                v-if="game.gameData.moves.length > 0"
+                :moves="game.gameData.moves"
+                :playerData="game.playerData"
+                :isHistory="isHistory"
+                :selectedMove="selectedMove"
+                @goBackInHistory="revertMove"
+            ></GameHistory>
           </b-col>
           <b-col cols="7">
             <GameBoard
-              :moves="tempMoves"
-              :host="game.gameData.host"
-              :guest="game.gameData.guest"
-              :isHistory="isHistory"
-              :playerOnTheMove="playerOnTheMove"
-              :waitingForPlayer="waitingForPlayer"
-              :winner="game.gameData.winner"
-              @updateGame="updateGame"
-          ></GameBoard>
+                :moves="tempMoves"
+                :host="game.gameData.host"
+                :hostImg="hostImg"
+                :guest="game.gameData.guest"
+                :guestImg="guestImg"
+                :isHistory="isHistory"
+                :playerOnTheMove="playerOnTheMove"
+                :waitingForPlayer="waitingForPlayer"
+                :winner="game.gameData.winner"
+                @updateGame="updateGame"
+            ></GameBoard>
           </b-col>
         </b-row>
       </b-col>
@@ -55,9 +69,10 @@ import GameHistory from "@/components/GameHistory";
 import PlayerBoard from "@/components/PlayerBoard";
 import {BUILD_ACTIVE_GAME_LIST, BUILD_GAME_HISTORY} from "@/store/actions/game";
 import router from "@/router";
+import ticTacToeApi from "@/mixins/ticTacToeAPI";
 
 export default {
-name: "GameView",
+  name: "GameView",
   components: {PlayerBoard, GameHistory, GameBoard},
   data() {
     return {
@@ -71,10 +86,20 @@ name: "GameView",
         ));
       }),
       tempMoves: [],
-      isHistory: false
+      isHistory: false,
+      selectedMatrixIds: [],
+      matrixIds: []
     }
   },
   methods: {
+    sendMatrixIds: function () {
+      let game = this.game;
+      game.gameData.moves = [];
+      game.matrixIds = this.selectedMatrixIds;
+      game.statusCode = 0;
+      game.serverResponse = false;
+      this.$mqtt.publish("ttt/game", JSON.stringify(game));
+    },
     revertMove: function (moves) {
       this.tempMoves = moves;
       this.isHistory = this.game.gameData.moves.length > this.tempMoves.length;
@@ -85,18 +110,40 @@ name: "GameView",
       if (this.selectedMove === 1) {
         game.state = "ACTIVE";
       }
+      game.matrixIds = this.selectedMatrixIds;
       game.gameData.moves.push(move);
       game.statusCode = 0;
       game.serverResponse = false;
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
-
-
     },
     goBack: function () {
       router.go(-1);
+    },
+    getMatrixIds: function () {
+      ticTacToeApi({
+        url: "/v1/matrix",
+        method: "GET"
+      }).then(resp => {
+        let matrixIds = [],
+        actualMatrixIds = this.game.matrixIds;
+
+        resp.data.forEach((matrix) => {
+          console.log("resp: "  + actualMatrixIds.indexOf(matrix.id));
+          if (matrix.available === true || actualMatrixIds.indexOf(matrix.id) !== -1) {
+            matrixIds.push({
+              value: matrix.id,
+              label: "Matrix " + matrix.id
+            });
+          }
+        });
+        this.matrixIds = matrixIds;
+      }).catch(err => {
+        console.log(err);
+      })
     }
   },
-  created: function () {
+  mounted: function () {
+    this.getMatrixIds();
 
     this.$mqtt.on('message', (topic, message) => {
       // message is Buffer
@@ -110,8 +157,11 @@ name: "GameView",
 
         //Player Updated Game
         if (resp.serverResponse == true && resp.statusCode === 200 && resp.state === "ACTIVE") {
+          this.game = resp;
           this.tempMoves = resp.gameData.moves;
         }
+
+        this.selectedMatrixIds = this.game.matrixIds;
       }
 
       if (topic === "ttt/all_games") {
@@ -126,26 +176,28 @@ name: "GameView",
 
     });
 
-  if (this.game) {
-    this.tempMoves = this.game.gameData.moves;
+    if (this.game) {
+      this.tempMoves = this.game.gameData.moves;
+      this.selectedMatrixIds = this.game.matrixIds;
 
-    if (this.waitingForPlayer && this.$store.getters.authenticatedUser.id !== this.game.gameData.host) {
-      let game = this.game;
-      game.state = "PENDING";
-      game.gameData.guest = this.$store.getters.authenticatedUser.id;
-      game.statusCode = 0;
-      game.serverResponse = false;
 
-      this.$mqtt.publish("ttt/game", JSON.stringify(game));
+      if (this.waitingForPlayer && this.$store.getters.authenticatedUser.id !== this.game.gameData.host) {
+        let game = this.game;
+        game.state = "PENDING";
+        game.gameData.guest = this.$store.getters.authenticatedUser.id;
+        game.statusCode = 0;
+        game.serverResponse = false;
+
+        this.$mqtt.publish("ttt/game", JSON.stringify(game));
+      }
+
     }
-
-  }
   },
   computed: {
     playerOnTheMove: function () {
       let moves = this.game.gameData.moves;
 
-      if (moves.length > 0 && moves[moves.length -1].player === "HOST") {
+      if (moves.length > 0 && moves[moves.length - 1].player === "HOST") {
         return "GUEST";
       }
       return "HOST";
@@ -155,6 +207,12 @@ name: "GameView",
     },
     selectedMove: function () {
       return this.tempMoves.length === 0 ? 1 : this.tempMoves.length;
+    },
+    hostImg: function () {
+      return this.$store.getters.getPlayerImages[this.game.gameData.host];
+    },
+    guestImg: function () {
+      return this.$store.getters.getPlayerImages["1"];
     }
   }
 }

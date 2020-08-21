@@ -1,9 +1,9 @@
 <template>
         <b-nav align="center">
-            <span>Angemeldet als: {{this.$store.getters.authenticatedUser.nickname}}</span>
+
             <router-link to="/play"><i class="fas fa-play fa-3x"></i></router-link>
             <router-link to="/history"><i class="fas fa-history fa-3x"></i></router-link>
-            <router-link to="/user"><i class="fas fa-user fa-3x"></i></router-link>
+            <router-link to="/user"><span class="mr-2 userName">{{this.$store.getters.authenticatedUser.nickname}}</span><i class="fas fa-user fa-3x"></i></router-link>
             <button class="btn" variant="" @click="logout"><i class="fas fa-sign-out-alt fa-3x"></i></button>
         </b-nav>
 </template>
@@ -30,5 +30,8 @@
     .nav>a {
         margin: 0 30px;
         color: black;
+    }
+    .userName {
+      font-size: 20px;
     }
 </style>

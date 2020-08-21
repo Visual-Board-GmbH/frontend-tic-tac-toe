@@ -143,7 +143,6 @@ export default {
     }
   },
   created: function () {
-
     this.$mqtt.on('message', (topic, message) => {
 
       // message is Buffer
