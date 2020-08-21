@@ -26,7 +26,7 @@
       </b-form>
     </b-modal>
     <h3>Meine Spiele</h3>
-    <GameList :games="myGames" :items="myGameItems"></GameList>
+    <GameList :games="myGames" :items="myGameItems" ></GameList>
     <h3>Offene Spiele</h3>
     <GameList :games="openGames" :items="openGameItems"></GameList>
   </b-container>
@@ -56,17 +56,29 @@ export default {
           {
             label: "Status",
             key: "state",
-            sortable:true
-          },
-          {
-            label: "Host",
-            key: "gameData.host",
-            formatter: (value, key, item) => {
-              return item.playerData.find(p => p.player === "HOST").displayName;
+            sortable:true,
+            formatter: (value) => {
+              switch(value) {
+                case "OPEN":
+                  return "Warte auf Spieler"
+                case "PENDING":
+                    return "Warte auf Spielstart"
+                case "ACTIVE":
+                  return "Spiel gestartet"
+                  default:
+                    return value;
+              }
             }
           },
           {
-            label: "Guest",
+            label: "Gastgeber",
+            key: "gameData.host",
+            formatter: (value, key, item) => {
+              return item.playerData.find(p => p.player === "HOST").displayName;
+            },
+          },
+          {
+            label: "Gast",
             key: "gameData.guest",
             formatter: (value, key, item) => {
               return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
@@ -100,7 +112,19 @@ export default {
           {
             label: "Status",
             key: "state",
-            sortable:true
+            sortable:true,
+            formatter: (value) => {
+              switch(value) {
+                case "OPEN":
+                  return "Warte auf Spieler"
+                case "PENDING":
+                  return "Warte auf Spielstart"
+                case "ACTIVE":
+                  return "Spiel gestartet"
+                default:
+                  return value;
+              }
+            }
           },
           {
             label: "Host",
@@ -136,7 +160,16 @@ export default {
   },
   computed: {
     myGameItems: function () {
-      return this.$store.getters.myGames;
+      return this.$store.getters.myGames.map((myGame) => {
+        let moves = myGame.gameData.moves;
+        if (moves.length > 0 && moves[moves.length - 1].player === "HOST") {
+          myGame._cellVariants = {"gameData.host": "success"};
+        } else if (moves.length > 0 && moves[moves.length - 1].player === "GUEST") {
+          myGame._cellVariants = {"gameData.guest": "success"};
+        }
+        return myGame;
+      });
+
     },
     openGameItems: function () {
       return this.$store.getters.openGames;
@@ -156,18 +189,13 @@ export default {
 
         if (resp.serverResponse == true && resp.statusCode === 200) {
           console.log("message: " + resp);
-          // if (Array.isArray(activeRequest) && activeRequest.indexOf(resp.requestId) !== -1) {
+
           this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
             title: "Neues Spiel erstellt",
             variant: "success",
             solid: true,
             appendToast: true
           });
-          // }
-
-          //modify newGame to display host and guest
-          resp.host = resp.gameData.host;
-          resp.guest = resp.gameData.guest;
         }
       }
 

@@ -61,7 +61,7 @@
           <b-button block type="submit" variant="primary">Speichern</b-button>
         </b-form>
       </b-tab>
-      <b-tab @click="loadUserImage" title="Spielzeichen">
+      <b-tab title="Spielzeichen">
         <b-row class="mt-3">
           <b-col>
             <b-form-group
@@ -86,7 +86,7 @@
                 label-for="input-7"
                 label-align="left"
             >
-              <img id="input-7" class="mt-2" v-if="form.tileImageSrc" :src="form.tileImageSrc">
+              <img id="input-7" class="mt-2" v-if="tileImageSrc" :src="tileImageSrc">
             </b-form-group>
           </b-col>
         </b-row>
@@ -110,8 +110,7 @@
           userName: "",
           nickname: "",
           password: "",
-          tileImage: null,
-          tileImageSrc: null,
+          tileImage: null
         }
       }
     },
@@ -145,34 +144,26 @@
           data: formData,
           method: "POST",
           headers: {'Content-Type': 'multipart/form-data'}
-        }).then(() => {
-          let reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = () => {
-            this.form.tileImageSrc = reader.result;
-          };
-          reader.onerror = (error) => {
-            console.log('Error: ', error);
-          };
+        }).then((resp) => {
+          this.$store.dispatch(SET_PLAYER_IMAGE, [this.$store.getters.authenticatedUser.id])
+          console.log(resp);
         }).catch(err => {
           console.log(err);
         })
-      },
-      loadUserImage: function () {
-
       }
     },
     created: function () {
-      this.$store.dispatch(SET_PLAYER_IMAGE, [this.$store.getters.authenticatedUser.id]).then(() => {
-        let authenticatedUser = this.$store.getters.authenticatedUser;
-        this.form.name = authenticatedUser.name;
-        this.form.userName = authenticatedUser.username;
-        this.form.nickname = authenticatedUser.nickname;
-        this.form.tileImageSrc= this.$store.getters.getPlayerImages[this.game.gameData.guest]
-        this.dataLoaded = true;
-      })
-
-
+      this.$store.dispatch(SET_PLAYER_IMAGE, [this.$store.getters.authenticatedUser.id]);
+      let authenticatedUser = this.$store.getters.authenticatedUser;
+      this.form.name = authenticatedUser.name;
+      this.form.userName = authenticatedUser.username;
+      this.form.nickname = authenticatedUser.nickname;
+      this.dataLoaded = true;
+    },
+    computed: {
+      tileImageSrc: function () {
+        return this.$store.getters.getPlayerImages[this.$store.getters.authenticatedUser.id];
+      }
     },
     components: {}
   }
