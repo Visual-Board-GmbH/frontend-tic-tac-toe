@@ -127,20 +127,21 @@ export default {
             }
           },
           {
-            label: "Host",
+            label: "Gastgeber",
             key: "gameData.host",
             formatter: (value, key, item) => {
               return item.playerData.find(p => p.player === "HOST").displayName;
             }
           },
           {
-            label: "Guest",
+            label: "Gast",
             key: "gameData.guest",
             formatter: (value, key, item) => {
               return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
             }
           },
           {
+            label: "Zuletzt geändert",
             key: "lastModified",
             formatter: value => {
               let date = new Date(parseInt(value, 10))
@@ -163,9 +164,9 @@ export default {
       return this.$store.getters.myGames.map((myGame) => {
         let moves = myGame.gameData.moves;
         if (moves.length > 0 && moves[moves.length - 1].player === "HOST") {
-          myGame._cellVariants = {"gameData.host": "success"};
-        } else if (moves.length > 0 && moves[moves.length - 1].player === "GUEST") {
           myGame._cellVariants = {"gameData.guest": "success"};
+        } else if (moves.length > 0 && moves[moves.length - 1].player === "GUEST") {
+          myGame._cellVariants = {"gameData.host": "success"};
         }
         return myGame;
       });

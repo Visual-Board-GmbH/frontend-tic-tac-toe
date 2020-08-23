@@ -11,6 +11,7 @@
             <v-select
                 placeholder="Bitte wählen Sie eine Matrix"
                 v-model="selectedMatrixIds"
+                v-if="isHost"
                 :options="matrixIds"
                 multiple=""
                 :reduce="matrixId => matrixId.value"
@@ -115,6 +116,7 @@ export default {
       game.gameData.moves.push(move);
       game.statusCode = 0;
       game.serverResponse = false;
+      delete game._cellVariants;
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
     },
     goBack: function () {
@@ -225,6 +227,9 @@ export default {
         return "GUEST";
       }
       return "HOST";
+    },
+    isHost: function () {
+      return this.game.gameData.host === this.$store.getters.authenticatedUser.id;
     },
     waitingForPlayer: function () {
       return this.game.gameData.guest === 0 && this.game.state === "OPEN";
