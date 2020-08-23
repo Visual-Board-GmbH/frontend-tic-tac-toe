@@ -11,6 +11,7 @@
             <v-select
                 placeholder="Bitte wählen Sie eine Matrix"
                 v-model="selectedMatrixIds"
+                v-if="isHost"
                 :options="matrixIds"
                 multiple=""
                 :reduce="matrixId => matrixId.value"
@@ -48,6 +49,7 @@
                 :guest="game.gameData.guest"
                 :guestImg="guestImg"
                 :isHistory="isHistory"
+                :serverError="isServerError"
                 :playerOnTheMove="playerOnTheMove"
                 :waitingForPlayer="waitingForPlayer"
                 :winner="game.gameData.winner"
@@ -114,6 +116,7 @@ export default {
       game.gameData.moves.push(move);
       game.statusCode = 0;
       game.serverResponse = false;
+      delete game._cellVariants;
       this.$mqtt.publish("ttt/game", JSON.stringify(game));
     },
     goBack: function () {
@@ -125,10 +128,10 @@ export default {
         method: "GET"
       }).then(resp => {
         let matrixIds = [],
-        actualMatrixIds = this.game.matrixIds;
+            actualMatrixIds = this.game.matrixIds;
 
         resp.data.forEach((matrix) => {
-          console.log("resp: "  + actualMatrixIds.indexOf(matrix.id));
+          console.log("resp: " + actualMatrixIds.indexOf(matrix.id));
           if (matrix.available === true || actualMatrixIds.indexOf(matrix.id) !== -1) {
             matrixIds.push({
               value: matrix.id,
@@ -142,7 +145,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  created: function () {
     this.getMatrixIds();
 
     this.$mqtt.on('message', (topic, message) => {
@@ -166,11 +169,34 @@ export default {
 
       if (topic === "ttt/all_games") {
         let resp = JSON.parse(message);
+        if (this.game === undefined) {
+          this.game = resp.find((g) => {
+            return (g.gameId === parseInt(this.$route.params.id, 10)) && ((
+                g.gameData.host === this.$store.getters.authenticatedUser.id ||
+                g.gameData.guest === this.$store.getters.authenticatedUser.id
+            ) || (
+                this.$store.getters.authenticatedUser.id !== g.gameData.host &&
+                g.gameData.guest === 0
+            ));
+          });
+        }
         this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
       }
 
       if (topic === "ttt/all_game_histories") {
         let resp = JSON.parse(message);
+        if (this.game === undefined) {
+          this.game = resp.find((g) => {
+            return (g.gameId === parseInt(this.$route.params.id, 10)) && ((
+                g.gameData.host === this.$store.getters.authenticatedUser.id ||
+                g.gameData.guest === this.$store.getters.authenticatedUser.id
+            ) || (
+                this.$store.getters.authenticatedUser.id !== g.gameData.host &&
+                g.gameData.guest === 0
+            ));
+          });
+        }
+
         this.$store.dispatch(BUILD_GAME_HISTORY, resp);
       }
 
@@ -202,6 +228,9 @@ export default {
       }
       return "HOST";
     },
+    isHost: function () {
+      return this.game.gameData.host === this.$store.getters.authenticatedUser.id;
+    },
     waitingForPlayer: function () {
       return this.game.gameData.guest === 0 && this.game.state === "OPEN";
     },
@@ -213,6 +242,20 @@ export default {
     },
     guestImg: function () {
       return this.$store.getters.getPlayerImages["1"];
+    },
+    getGame: function () {
+      return this.$store.getters.allGames.find((g) => {
+        return ((g.gameId === parseInt(this.$route.params.id, 10)) || (g.id === parseInt(this.$route.params.id, 10))) && ((
+            g.gameData.host === this.$store.getters.authenticatedUser.id ||
+            g.gameData.guest === this.$store.getters.authenticatedUser.id
+        ) || (
+            this.$store.getters.authenticatedUser.id !== g.gameData.host &&
+            g.gameData.guest === 0
+        ));
+      })
+    },
+    isServerError: function () {
+      return this.game.statusCode === 5000 & this.game.serverResponse === true;
     }
   }
 }

@@ -16,16 +16,39 @@
         gameHistory: {
           fields: [
             {
-              key: "id",
+              key: "gameId",
               class: "d-none"
             },
             {
-              label: "Host",
-              key: "gameData.host"
+              key: "name",
+              sortable:true
             },
             {
-              label: "Guest",
-              key: "gameData.guest"
+              label: "Gastgeber",
+              key: "gameData.host",
+              formatter: (value, key, item) => {
+                return item.playerData.find(p => p.player === "HOST").displayName;
+              }
+            },
+            {
+              label: "Gast",
+              key: "gameData.guest",
+              formatter: (value, key, item) => {
+                return item.playerData.find(p => p.player === "GUEST") ? item.playerData.find(p => p.player === "GUEST").displayName : "Warte auf Spieler";
+              }
+            },
+            {
+              label: "Spieldatum",
+              key: "datePlayed",
+              formatter: value => {
+                let date = new Date(parseInt(value, 10))
+                return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+              },
+              sortable:true
+            },
+            {
+              key: "playerData",
+              class: "d-none"
             }
           ],
           items: []
@@ -43,7 +66,21 @@
     },
     computed: {
       myClosedGame: function () {
-        return this.$store.getters.myClosedGames;
+
+        return this.$store.getters.myClosedGames.map((closedGame) => {
+          let winner = closedGame.gameData.winner;
+            if (winner !== "NONE") {
+              let winnerId = winner === "HOST" ? closedGame.gameData.host : closedGame.gameData.guest;
+              if (winnerId === this.$store.getters.authenticatedUser.id) {
+                closedGame._rowVariant = "success";
+              } else {
+                closedGame._rowVariant = "danger";
+              }
+            } else {
+              closedGame._rowVariant = "warning";
+            }
+            return closedGame;
+        });
       }
     },
     components: {

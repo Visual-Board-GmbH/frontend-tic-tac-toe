@@ -6,9 +6,9 @@ import PlayView from "../views/PlayView";
 import UserView from "../views/UserView";
 import HistoryView from "../views/HistoryView";
 import GameView from "@/views/GameView";
-import NewGameView from "@/views/NewGameView";
 import store from "../store";
 import {AUTH_CHECK} from "../store/actions/auth";
+import Logout from "@/components/Logout";
 
 Vue.use(VueRouter);
 
@@ -22,19 +22,19 @@ const routes = [
         }
     },
     {
-        path: "/",
-        name: "App",
-        redirect: "/play",
-        meta: {
-            requiresAuth: true
-        }
-    },
-    {
         path: "/login",
         name: "Login",
         component: LoginView,
         meta: {
             requiresAuth: false
+        }
+    },
+    {
+        path: "/logout",
+        name: "Logout",
+        component: Logout,
+        meta: {
+            requiresAuth: true
         }
     },
     {
@@ -72,11 +72,6 @@ const routes = [
         name: "Game",
         component: GameView,
         props: true
-    },
-    {
-        path: "/new_game",
-        name: "NewGame",
-        component: NewGameView
     }
 ]
 

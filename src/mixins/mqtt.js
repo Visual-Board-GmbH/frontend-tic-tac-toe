@@ -3,8 +3,8 @@ import mqtt from "mqtt";
 
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 
-const client = mqtt.connect('mqtt://' + location.hostname, {
-    port: 19001,
+const client = mqtt.connect('mqtt://tic-tac-toe-mqtt.hidora.com', {
+    port: 11168,
     clientId: clientId,
     clean: false,
     keepAlive: true,

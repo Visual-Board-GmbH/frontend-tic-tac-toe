@@ -5,6 +5,8 @@
       @row-clicked="openGame"
       show-empty
       empty-text="Keine Spiele vorhanden"
+      sticky-header
+      :hover="true"
   ></b-table>
 </template>
 

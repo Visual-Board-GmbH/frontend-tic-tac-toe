@@ -14,6 +14,7 @@ import Vue from "vue";
 
 const state = {
     activeGames: [],
+    allGames: [],
     closedGames: [],
     playerImage: {}
 };
@@ -33,7 +34,8 @@ const getters = {
         })
     },
     allGames: state => {
-        return state.activeGames.concat(state.closedGames)
+        state.allGames = state.activeGames.concat(state.closedGames);
+        return state.allGames;
     },
     closedGames: state => {
         return state.closedGames
@@ -135,8 +137,6 @@ const mutations = {
         state.activeGames.push(game);
     },
     [UPDATE_GAME_IN_GAME_LIST]: (state, {game, storedGameIndex}) => {
-        // console.log("New Game: " + JSON.stringify(game));
-        // console.log("Old game: " + storedGameIndex);
         state.activeGames.splice(storedGameIndex, 1);
         state.activeGames.push(game);
     },
