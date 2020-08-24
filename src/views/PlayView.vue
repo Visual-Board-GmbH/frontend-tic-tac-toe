@@ -85,6 +85,7 @@ export default {
             }
           },
           {
+            label: "Zuletzt geändert",
             key: "lastModified",
             formatter: value => {
               let date = new Date(value),
