@@ -124,7 +124,9 @@ const actions = {
                 responseType: 'arraybuffer'
             }).then(resp => {
                 let image = new Buffer(resp.data, 'binary').toString('base64');
-                commit(SET_PLAYER_IMAGE, {image, userId});
+                if (image != "") {
+                    commit(SET_PLAYER_IMAGE, {image, userId});
+                }
             }).catch(err => {
                 console.log(err);
             })

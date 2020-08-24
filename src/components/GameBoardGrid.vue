@@ -1,5 +1,5 @@
 <template>
-    <b-container class="game-board-grid" :class="{disabled: isReadOnly }">
+    <b-container class="game-board-grid" :class="{disabled: isReadOnly }" fluid>
         <b-row cols="3">
             <GameBoardCell
                     v-for="col in grid"

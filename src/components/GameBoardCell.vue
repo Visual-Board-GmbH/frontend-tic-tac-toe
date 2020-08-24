@@ -1,7 +1,7 @@
 <template>
-    <b-col @click="setValue(colId)" :class="{disabled: isSet===true}" class="game-board-cell align-self-center">
-        <div class="game-board-cell-content text-center" v-if="isSet && (image !== '' && image != null)"><img :src="image" :alt="tile"></div>
-      <div class="game-board-cell-content text-center" v-else>{{ tile }}</div>
+    <b-col @click="setValue(colId)" :class="{disabled: isSet===true}" class="game-board-cell align-items-center">
+      <div class="game-board-cell-content" v-if="isSet && getImage !== null"><b-img :src="getImage" center class="p-2" fluid-grow :alt="getTile"></b-img></div>
+      <div class="game-board-cell-content text-center" v-else><span v-html="getTile"></span></div>
     </b-col>
 </template>
 
@@ -14,7 +14,15 @@
             setValue: function (colId) {
                 this.$emit("setValueInCell", colId);
             }
-        }
+        },
+      computed : {
+          getImage: function () {
+            return this.image !== '' && this.image != null ? this.image : null;
+          },
+          getTile: function () {
+            return this.tile === "X" ? '<i class="fas fa-times"></i>' : this.tile === "O" ? '<i class="far fa-circle"></i>' : "";
+          }
+      }
     }
 </script>
 

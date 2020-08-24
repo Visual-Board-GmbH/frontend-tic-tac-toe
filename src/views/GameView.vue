@@ -3,23 +3,11 @@
     <b-row class="mt-3" v-if="this.game">
       <b-col>
         <b-row>
-          <b-col cols="1">
+          <b-col cols="5">
             <router-link tag="button" to="\play" @click.native="goBack()" class="btn"><i class="fas fa-arrow-left"></i>
             </router-link>
           </b-col>
-          <b-col>
-            <v-select
-                placeholder="Bitte wählen Sie eine Matrix"
-                v-model="selectedMatrixIds"
-                v-if="isHost"
-                :options="matrixIds"
-                multiple=""
-                :reduce="matrixId => matrixId.value"
-                @input="sendMatrixIds"
-                @created="getMatrixIds"
-            ></v-select>
-          </b-col>
-          <b-col sm="auto"><h3>{{ this.game.name }}</h3></b-col>
+
           <b-col cols="7">
             <PlayerBoard
                 :host="game.gameData.host"
@@ -31,17 +19,36 @@
           </b-col>
         </b-row>
         <b-row class="mt-5">
-          <b-col cols="5">
-            <GameHistory
+          <b-col xs="12" sm="5" class="mb-2">
+            <b-row>
+              <b-col lg="12" xl="6">
+                <v-select
+                    placeholder="Bitte wählen Sie eine Matrix"
+                    v-model="selectedMatrixIds"
+                    v-if="isHost"
+                    :options="matrixIds"
+                    multiple=""
+                    :reduce="matrixId => matrixId.value"
+                    @input="sendMatrixIds"
+                    @created="getMatrixIds"
+                ></v-select>
+              </b-col>
+              <b-col lg="12" xl="6"><h3>{{ this.game.name }}</h3></b-col>
+            </b-row>
+            <b-row>
+              <GameHistory
                 v-if="game.gameData.moves.length > 0"
                 :moves="game.gameData.moves"
                 :playerData="game.playerData"
                 :isHistory="isHistory"
                 :selectedMove="selectedMove"
-                @goBackInHistory="revertMove"
-            ></GameHistory>
+                @goBackInHistory="revertMove">
+
+              </GameHistory>
+            </b-row>
+
           </b-col>
-          <b-col cols="7">
+          <b-col  xs="12" sm="7">
             <GameBoard
                 :moves="tempMoves"
                 :host="game.gameData.host"
@@ -127,12 +134,10 @@ export default {
         url: "/v1/matrix",
         method: "GET"
       }).then(resp => {
-        let matrixIds = [],
-            actualMatrixIds = this.game.matrixIds;
+        let matrixIds = [];
 
         resp.data.forEach((matrix) => {
-          console.log("resp: " + actualMatrixIds.indexOf(matrix.id));
-          if (matrix.available === true || actualMatrixIds.indexOf(matrix.id) !== -1) {
+          if (matrix.available === 1) {
             matrixIds.push({
               value: matrix.id,
               label: "Matrix " + matrix.id
@@ -167,38 +172,46 @@ export default {
         this.selectedMatrixIds = this.game.matrixIds;
       }
 
-      if (topic === "ttt/all_games") {
-        let resp = JSON.parse(message);
-        if (this.game === undefined) {
-          this.game = resp.find((g) => {
-            return (g.gameId === parseInt(this.$route.params.id, 10)) && ((
-                g.gameData.host === this.$store.getters.authenticatedUser.id ||
-                g.gameData.guest === this.$store.getters.authenticatedUser.id
-            ) || (
-                this.$store.getters.authenticatedUser.id !== g.gameData.host &&
-                g.gameData.guest === 0
-            ));
-          });
-        }
-        this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
-      }
-
-      if (topic === "ttt/all_game_histories") {
-        let resp = JSON.parse(message);
-        if (this.game === undefined) {
-          this.game = resp.find((g) => {
-            return (g.gameId === parseInt(this.$route.params.id, 10)) && ((
-                g.gameData.host === this.$store.getters.authenticatedUser.id ||
-                g.gameData.guest === this.$store.getters.authenticatedUser.id
-            ) || (
-                this.$store.getters.authenticatedUser.id !== g.gameData.host &&
-                g.gameData.guest === 0
-            ));
-          });
+      if (!this.game) {
+        if (topic === "ttt/all_games") {
+          let resp = JSON.parse(message);
+          if (this.game === undefined) {
+            this.game = resp.find((g) => {
+              return (g.gameId === parseInt(this.$route.params.id, 10)) && ((
+                  g.gameData.host === this.$store.getters.authenticatedUser.id ||
+                  g.gameData.guest === this.$store.getters.authenticatedUser.id
+              ) || (
+                  this.$store.getters.authenticatedUser.id !== g.gameData.host &&
+                  g.gameData.guest === 0
+              ));
+            });
+          }
+          this.$store.dispatch(BUILD_ACTIVE_GAME_LIST, resp);
         }
 
-        this.$store.dispatch(BUILD_GAME_HISTORY, resp);
+        if (topic === "ttt/all_game_histories") {
+          let resp = JSON.parse(message);
+          if (this.game === undefined) {
+            this.game = resp.find((g) => {
+              return (g.gameId === parseInt(this.$route.params.id, 10)) && ((
+                  g.gameData.host === this.$store.getters.authenticatedUser.id ||
+                  g.gameData.guest === this.$store.getters.authenticatedUser.id
+              ) || (
+                  this.$store.getters.authenticatedUser.id !== g.gameData.host &&
+                  g.gameData.guest === 0
+              ));
+            });
+          }
+
+          this.$store.dispatch(BUILD_GAME_HISTORY, resp);
+        }
+
+        if (this.game) {
+          this.tempMoves = this.game.gameData.moves;
+          this.selectedMatrixIds = this.game.matrixIds;
+        }
       }
+
 
     });
 
@@ -241,7 +254,7 @@ export default {
       return this.$store.getters.getPlayerImages[this.game.gameData.host];
     },
     guestImg: function () {
-      return this.$store.getters.getPlayerImages["1"];
+      return this.$store.getters.getPlayerImages[this.game.gameData.guest];
     },
     getGame: function () {
       return this.$store.getters.allGames.find((g) => {
