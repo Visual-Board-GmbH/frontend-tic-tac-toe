@@ -41,7 +41,7 @@
               label: "Spieldatum",
               key: "datePlayed",
               formatter: value => {
-                let date = new Date(value),
+                let date = new Date(parseInt(value, 10)),
                     options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 return date.toLocaleDateString('de-CH', options);
               },

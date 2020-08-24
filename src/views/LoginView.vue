@@ -1,7 +1,7 @@
 <template>
     <b-container class="shadow p-3 mb-5 mt-5 bg-white rounded">
         <h3>Login</h3>
-        <b-form @submit.prevent="login">
+        <b-form validated="true" @submit.prevent="login">
             <b-form-group
                     id="input-group-1"
                     label="Benutzername:"

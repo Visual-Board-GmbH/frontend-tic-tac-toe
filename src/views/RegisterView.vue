@@ -1,7 +1,7 @@
 <template>
     <b-container class="shadow p-3 mb-5 mt-5 bg-white rounded">
         <h3>Registration</h3>
-        <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+        <b-form @submit="onSubmit" validated="true" @reset="onReset" v-if="show">
             <b-form-group
                     id="input-group-1"
                     label="Name:"
@@ -59,12 +59,7 @@
                         type="password"
                 ></b-form-input>
             </b-form-group>
-
-            <b-form-group id="input-group-5">
-                    <b-form-checkbox v-model="termsAccepted">Datenschutzbestimmungen</b-form-checkbox>
-            </b-form-group>
-
-            <b-button block type="submit" :disabled="!this.termsAccepted" variant="primary">Registrieren</b-button>
+            <b-button block type="submit" variant="primary">Registrieren</b-button>
             <small>Bereits registriert?
                 <router-link :to="{name: 'Login'}">Anmelden</router-link>
             </small>
@@ -87,8 +82,7 @@
                     nickname: '',
                     password: ''
                 },
-                show: true,
-                termsAccepted: false
+                show: true
             }
         },
         methods: {
