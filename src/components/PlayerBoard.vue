@@ -1,8 +1,8 @@
 <template>
   <b-container class="shadow bg-white rounded">
     <b-row>
-      <b-col class="p-2 rounded text-center" :class="{active: activePlayer === 'HOST', 'bg-success': winner === 'HOST'}">{{ getDisplayName("HOST") }}</b-col>
-      <b-col class="p-2 rounded text-center" :class="{active: activePlayer === 'GUEST', 'bg-success': winner === 'GUEST'}">{{ this.guest === 0 ? "Warten auf Spieler" : getDisplayName("GUEST") }}</b-col>
+      <b-col class="p-2 rounded text-center" :class="{active: activePlayer === 'HOST', 'bg-success': winner === 'HOST', 'bg-warning': winner === 'NONE'}">{{ getDisplayName("HOST") }}</b-col>
+      <b-col class="p-2 rounded text-center" :class="{active: activePlayer === 'GUEST', 'bg-success': winner === 'GUEST', 'bg-warning': winner === 'NONE'}">{{ this.guest === 0 ? "Warten auf Spieler" : getDisplayName("GUEST") }}</b-col>
     </b-row>
   </b-container>
 </template>

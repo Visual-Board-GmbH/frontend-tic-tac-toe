@@ -25,7 +25,7 @@
                 <v-select
                     placeholder="Bitte wählen Sie eine Matrix"
                     v-model="selectedMatrixIds"
-                    v-if="isHost"
+                    v-if="isHost && matrixIds.length > 0"
                     :options="matrixIds"
                     multiple=""
                     :reduce="matrixId => matrixId.value"
@@ -33,7 +33,7 @@
                     @created="getMatrixIds"
                 ></v-select>
               </b-col>
-              <b-col lg="12" xl="6"><h3>{{ this.game.name }}</h3></b-col>
+              <b-col cols="auto"><h3>{{ this.game.name }}</h3></b-col>
             </b-row>
             <b-row>
               <GameHistory
@@ -137,7 +137,7 @@ export default {
         let matrixIds = [];
 
         resp.data.forEach((matrix) => {
-          if (matrix.available === 1) {
+          if (matrix.available) {
             matrixIds.push({
               value: matrix.id,
               label: "Matrix " + matrix.id
