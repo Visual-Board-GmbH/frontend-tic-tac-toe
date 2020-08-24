@@ -87,8 +87,9 @@ export default {
           {
             key: "lastModified",
             formatter: value => {
-              let date = new Date(parseInt(value, 10))
-              return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+              let date = new Date(value),
+                  options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+              return date.toLocaleDateString('de-CH', options);
             },
             sortable:true
           },
@@ -144,8 +145,9 @@ export default {
             label: "Zuletzt geändert",
             key: "lastModified",
             formatter: value => {
-              let date = new Date(parseInt(value, 10))
-              return date.getDay() + "." + date.getMonth() + "." + date.getFullYear();
+              let date = new Date(value),
+                  options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+              return date.toLocaleDateString('de-CH', options);
             },
             sortable:true
           },
@@ -191,12 +193,13 @@ export default {
         if (resp.serverResponse == true && resp.statusCode === 200) {
           console.log("message: " + resp);
 
-          this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
-            title: "Neues Spiel erstellt",
-            variant: "success",
-            solid: true,
-            appendToast: true
-          });
+          //ToDo Fix bug with Toaster
+          // this.$bvToast.toast("Neues Spiel mit dem Namen " + resp.name + " wurde erstellt.", {
+          //   title: "Neues Spiel erstellt",
+          //   variant: "success",
+          //   solid: true,
+          //   appendToast: true
+          // });
         }
       }
 
